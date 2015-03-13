@@ -5,12 +5,12 @@ namespace Depage\Fs;
 class FsFile extends Fs
 {
     // {{{ setBase
-    protected function setBase($path)
+    protected function setBase()
     {
-        $realPath = realpath($path);
+        $realPath = realpath($this->url->path);
 
         if ($realPath === false) {
-            throw new Exceptions\FsException('Invalid path: "' . $path . '"');
+            throw new Exceptions\FsException('Invalid path: "' . $this->url->path . '"');
         }
 
         return parent::setBase($realPath);

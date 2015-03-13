@@ -10,8 +10,6 @@ class Url
     public $pass;
     public $port;
     public $path;
-    public $base;
-    public $cwd;
     // }}}
     // {{{ constructor
     public function __construct($url = '')
@@ -69,37 +67,6 @@ class Url
     }
     // }}}
 
-    // {{{ setBase
-    public function setBase($path)
-    {
-        $cleanPath = $this->cleanPath('/' . $path);
-        $this->url->base = (substr($cleanPath, -1) == '/') ? $cleanPath : $cleanPath . '/';
-    }
-    // }}}
-    // {{{ absolute
-    public function absolute($url)
-    {
-        $newUrl = new Url($url);
-
-        if (!$newUrl->scheme) {
-            $newUrl->scheme = $this->scheme;
-            $newUrl->user = $this->user;
-            $newUrl->pass = $this->pass;
-            $newUrl->host = $this->host;
-            $newUrl->port = $this->port;
-
-            if (substr($newUrl->path, 0, 1) !== '/') {
-                $newUrl->path = $this->base . $this->cwd . $newUrl->path;
-            }
-        }
-
-        if (!preg_match(';^' . preg_quote($this->base) . '(.*)$;', $newUrl->path)) {
-            throw new Exceptions\FsException('Cannot leave base directory "' . $this->base . '".');
-        }
-
-        return $newUrl;
-    }
-    // }}}
     // {{{ getFileName
     public function getFileName()
     {
@@ -123,8 +90,6 @@ class Url
         $path .= ($this->user) ? '@'                : '';
         $path .= $this->host;
         $path .= ($this->port) ? ':' . $this->port  : '';
-        $path .= $this->base;
-        $path .= $this->cwd;
         $path .= ($this->path) ? $this->path        : '/';
 
         return $path;

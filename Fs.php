@@ -5,10 +5,12 @@ namespace Depage\Fs;
 class Fs
 {
     // {{{ variables
-    protected $url;
+    protected $base = null;
+    protected $cwd = null;
+    protected $url = null;
     protected $hidden = false;
     protected $streamContextOptions = array();
-    protected $streamContext;
+    protected $streamContext = null;
     // }}}
     // {{{ constructor
     public function __construct($params = array())
@@ -32,7 +34,6 @@ class Fs
         $schemeClass = '\Depage\Fs\Fs' . ucfirst($alias['class']);
         $params['scheme'] = $alias['scheme'];
 
-        var_dump($params);
         return new $schemeClass($params);
     }
     // }}}
@@ -62,10 +63,12 @@ class Fs
     // {{{ pwd
     public function pwd()
     {
-        // @todo are hooks necessary here?
         $this->preCommandHook();
+        // @todo "copy" constructor
+        $pwd = new Url($this->url->__toString());
+        $pwd->path = $this->base . $this->cwd . $pwd->path;
         $this->postCommandHook();
-        return $this->url->__toString();
+        return $pwd->__toString();
     }
     // }}}
     // {{{ ls
@@ -73,7 +76,7 @@ class Fs
     {
         $this->preCommandHook();
 
-        $lsUrl = $this->url->absolute($url);
+        $lsUrl = $this->absolute($url);
 
         $path = str_replace($this->pwd(), '', $lsUrl);
         $ls = $this->lsRecursive($path, '');
@@ -118,7 +121,7 @@ class Fs
     {
         $this->preCommandHook();
 
-        $remote = $this->url->absolute($remotePath);
+        $remote = $this->absolute($remotePath);
         $exists = file_exists($remote);
 
         $this->postCommandHook();
@@ -130,7 +133,7 @@ class Fs
     {
         $this->preCommandHook();
 
-        $remote = $this->url->absolute($remotePath);
+        $remote = $this->absolute($remotePath);
         $fileInfo = new \SplFileInfo($remote);
 
         $this->postCommandHook();
@@ -150,7 +153,7 @@ class Fs
     {
         $this->preCommandHook();
 
-        $absoluteUrl = $this->url->absolute($url);
+        $absoluteUrl = $this->absolute($url);
 
         if (is_dir($absoluteUrl) && is_readable($absoluteUrl . '/.')) {
             $this->url->cwd = str_replace($this->url, '', $absoluteUrl) . '/';
@@ -173,7 +176,7 @@ class Fs
     {
         $this->preCommandHook();
 
-        $absoluteUrl = $this->url->absolute($pathName);
+        $absoluteUrl = $this->absolute($pathName);
         $success = mkdir($absoluteUrl, $mode, $recursive, $this->streamContext);
 
         if (!$success) {
@@ -195,9 +198,10 @@ class Fs
     {
         $this->preCommandHook();
 
-        $absoluteUrl = $this->url->absolute($pathName);
-        if (preg_match('/^' . preg_quote($absoluteUrl, '/') . '\//', $this->url . '/')) {
-            throw new Exceptions\FsException('Cannot delete current or parent directory "' . $this->url->errorMessage() . '".');
+        $absoluteUrl = $this->absolute($url);
+        if (preg_match('/^' . preg_quote($absoluteUrl, '/') . '\//', $this->pwd() . '/')) {
+            // @todo error message
+            throw new Exceptions\FsException('Cannot delete current or parent directory "' . $this->pwd() . '".');
         }
         $this->rmRecursive($url);
 
@@ -217,8 +221,8 @@ class Fs
     {
         $this->preCommandHook();
 
-        $source = $this->url->absolute($sourcePath);
-        $target = $this->url->absolute($targetPath);
+        $source = $this->absolute($sourcePath);
+        $target = $this->absolute($targetPath);
 
         if (file_exists($source)) {
             if(file_exists($target) && is_dir($target)) {
@@ -248,7 +252,7 @@ class Fs
     {
         $this->preCommandHook();
 
-        $remote = $this->url->absolute($remotePath);
+        $remote = $this->absolute($remotePath);
         if ($local === null) {
             $local = $remote->getFileName();
         }
@@ -272,7 +276,7 @@ class Fs
     {
         $this->preCommandHook();
 
-        $remote = $this->url->absolute($remotePath);
+        $remote = $this->absolute($remotePath);
         if (!copy($local, $remote, $this->streamContext)) {
             throw new Exceptions\FsException('Cannot copy "' . $local . '" to "' . $remote->errorMessage() . '".');
         }
@@ -285,7 +289,7 @@ class Fs
     {
         $this->preCommandHook();
 
-        $remote = $this->url->absolute($remotePath);
+        $remote = $this->absolute($remotePath);
         $string = file_get_contents($remote, false, $this->streamContext);
         if ($string === false) {
             throw new Exceptions\FsException('Cannot get contents of "' . $remote->errorMessage() . '".');
@@ -308,8 +312,7 @@ class Fs
     {
         $this->preCommandHook();
 
-        $remote = $this->url->absolute($remotePath);
-        var_dump($remote);
+        $remote = $this->absolute($remotePath);
         $bytes = file_put_contents($remote, $string, 0, $this->streamContext);
         if ($bytes === false) {
             throw new Exceptions\FsException('Cannot write string to "' . $remote->errorMessage() . '".');
@@ -324,8 +327,9 @@ class Fs
     {
         $testFile = 'depage-fs-test-file.tmp';
         $testString = 'depage-fs-test-string';
+        $success = false;
 
-        try {
+//        try {
             if (!$this->exists($testFile)) {
                 $this->putString($testFile, $testString);
                 if ($this->getString($testFile) === $testString) {
@@ -333,10 +337,11 @@ class Fs
                     $success = !$this->exists($testFile);
                 }
             }
-        } catch (Exceptions\FsException $exception) {
+ /*       } catch (Exceptions\FsException $exception) {
             $error = $exception->getMessage();
             $success = false;
         }
+        */
 
         return $success;
     }
@@ -358,8 +363,8 @@ class Fs
     // {{{ lateConnect
     protected function lateConnect()
     {
-        if ($this->url->base !== null) {
-            $this->url->setBase();
+        if ($this->base === null) {
+            $this->setBase();
         }
     }
     // }}}
@@ -376,6 +381,38 @@ class Fs
         } else {
             restore_error_handler();
         }
+    }
+    // }}}
+
+    // {{{ setBase
+    protected function setBase()
+    {
+        $cleanPath = Url::cleanPath('/' . $this->url->path);
+        $this->base = (substr($cleanPath, -1) == '/') ? $cleanPath : $cleanPath . '/';
+    }
+    // }}}
+    // {{{ absolute
+    protected function absolute($url)
+    {
+        $newUrl = new Url($url);
+
+        if (!$newUrl->scheme) {
+            $newUrl->scheme = $this->url->scheme;
+            $newUrl->user = $this->url->user;
+            $newUrl->pass = $this->url->pass;
+            $newUrl->host = $this->url->host;
+            $newUrl->port = $this->url->port;
+
+            if (substr($newUrl->path, 0, 1) !== '/') {
+                $newUrl->path = $this->base . $this->cwd . $newUrl->path;
+            }
+        }
+
+        if (!preg_match(';^' . preg_quote($this->base) . '(.*)$;', $newUrl->path)) {
+            throw new Exceptions\FsException('Cannot leave base directory "' . $this->base . '".');
+        }
+
+        return $newUrl;
     }
     // }}}
 
@@ -420,8 +457,8 @@ class Fs
 
                 if ($count == 1) {
                     $result[] = $next;
-                    // @todo concatenate (get rid of clean call)
-                } elseif (is_dir($this->url . $this->url->base . $this->url->cwd . $next)) {
+                    // @todo speed up (get rid of clean call)
+                } elseif (is_dir($this->pwd() . $next)) {
                     $result = array_merge(
                         $result,
                         $this->lsRecursive(implode('/', $patterns), $next)
@@ -436,7 +473,8 @@ class Fs
     // {{{ rmRecursive
     protected function rmRecursive($url)
     {
-        $cleanUrl = $this->cleanUrl($url);
+        // @todo rename cleanUrl, concate
+        $cleanUrl = $this->absolute($url);
         $success = false;
 
         if (!file_exists($cleanUrl)) {
@@ -461,7 +499,8 @@ class Fs
     // {{{ scandir
     protected function scandir($url = '', $hidden = null)
     {
-        $cleanUrl = $this->cleanUrl($url);
+        // @todo rename cleanUrl, concate
+        $cleanUrl = $this->absolute($url);
         if ($hidden === null) {
             $hidden = $this->hidden;
         }

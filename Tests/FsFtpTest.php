@@ -31,8 +31,6 @@ class FsFtpTest extends TestRemote
         );
 
         $fs = new Depage\Fs\FsFtp($params);
-        $fs->test($error);
-        var_dump($error);
         $this->assertTrue($fs->test());
     }
     // }}}
