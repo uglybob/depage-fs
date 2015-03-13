@@ -4,7 +4,6 @@ use Depage\Fs\Fs;
 
 class FactoryTest extends PHPUnit_Framework_TestCase
 {
-
     // {{{ getScheme
     public function getScheme($fs)
     {
@@ -13,7 +12,7 @@ class FactoryTest extends PHPUnit_Framework_TestCase
         $urlProperty->setAccessible(true);
         $url = $urlProperty->getValue($fs);
 
-        return $url['scheme'];
+        return $url->scheme;
     }
     // }}}
 
