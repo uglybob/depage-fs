@@ -66,7 +66,8 @@ class Fs
         $this->preCommandHook();
         // @todo "copy" constructor
         $pwd = new Url($this->url->__toString());
-        $pwd->path = $this->base . $this->cwd . $pwd->path;
+        $pwd->prefix($this->base . $this->cwd);
+
         $this->postCommandHook();
         return $pwd->__toString();
     }
@@ -77,7 +78,6 @@ class Fs
         $this->preCommandHook();
 
         $lsUrl = $this->absolute($url);
-
         $path = str_replace($this->pwd(), '', $lsUrl);
         $ls = $this->lsRecursive($path, '');
 
@@ -154,9 +154,8 @@ class Fs
         $this->preCommandHook();
 
         $absoluteUrl = $this->absolute($url);
-
         if (is_dir($absoluteUrl) && is_readable($absoluteUrl . '/.')) {
-            $this->url->cwd = str_replace($this->url, '', $absoluteUrl) . '/';
+            $this->cwd = str_replace($this->url, '', $absoluteUrl) . '/';
         } else {
             throw new Exceptions\FsException('Directory not accessible "' . $absoluteUrl->path . '".');
         }
@@ -387,8 +386,8 @@ class Fs
     // {{{ setBase
     protected function setBase()
     {
-        $cleanPath = Url::cleanPath('/' . $this->url->path);
-        $this->base = (substr($cleanPath, -1) == '/') ? $cleanPath : $cleanPath . '/';
+        $trimmed = trim($this->url->path, '/');
+        $this->base = ($trimmed) ? '/' . $trimmed . '/' : '/';
     }
     // }}}
     // {{{ absolute
@@ -404,10 +403,9 @@ class Fs
             $newUrl->port = $this->url->port;
 
             if (substr($newUrl->path, 0, 1) !== '/') {
-                $newUrl->path = $this->base . $this->cwd . $newUrl->path;
+                $newUrl->prefix($this->base . $this->cwd);
             }
         }
-
         if (!preg_match(';^' . preg_quote($this->base) . '(.*)$;', $newUrl->path)) {
             throw new Exceptions\FsException('Cannot leave base directory "' . $this->base . '".');
         }

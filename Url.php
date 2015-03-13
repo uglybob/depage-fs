@@ -66,6 +66,12 @@ class Url
         return $parsed;
     }
     // }}}
+    // {{{ prefix
+    public function prefix($prefix)
+    {
+        $this->path = $this->cleanPath($prefix . '/' . $this->path);
+    }
+    // }}}
 
     // {{{ getFileName
     public function getFileName()
@@ -90,7 +96,7 @@ class Url
         $path .= ($this->user) ? '@'                : '';
         $path .= $this->host;
         $path .= ($this->port) ? ':' . $this->port  : '';
-        $path .= ($this->path) ? $this->path        : '/';
+        $path .= ($this->path) ? '/' . $this->path  : '/';
 
         return $path;
     }
@@ -98,14 +104,13 @@ class Url
     // {{{ errorMessage
     public function errorMessage()
     {
+        // @todo boilerplate
         $path = $this->scheme . '://';
         $path .= $this->user;
         $path .= ($this->pass) ? ':...' : '';
         $path .= ($this->user) ? '@'                : '';
         $path .= $this->host;
         $path .= ($this->port) ? ':' . $this->port  : '';
-        $path .= $this->base;
-        $path .= $this->cwd;
         $path .= ($this->path) ? $this->path        : '/';
 
         return $path;
