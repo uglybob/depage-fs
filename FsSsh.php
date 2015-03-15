@@ -51,10 +51,10 @@ class FsSsh extends Fs
     protected function getConnection(&$fingerprint = null)
     {
         if (!$this->connection) {
-            if (isset($this->url['port'])) {
-                $this->connection = ssh2_connect($this->url['host'], $this->url['port']);
+            if ($this->url->port === null) {
+                $this->connection = ssh2_connect($this->url->host);
             } else {
-                $this->connection = ssh2_connect($this->url['host']);
+                $this->connection = ssh2_connect($this->url->host, $this->url->port);
             }
         }
         $fingerprint = ssh2_fingerprint($this->connection);
@@ -65,7 +65,7 @@ class FsSsh extends Fs
     // {{{ getSession
     protected function getSession()
     {
-        if (!$this->session) {
+        if (!$this->url->session) {
             $connection = $this->getConnection($fingerprint);
 
             if (strcasecmp($this->fingerprint, $fingerprint) !== 0) {
@@ -85,13 +85,13 @@ class FsSsh extends Fs
             }
 
             if ($authenticated) {
-                $this->session = ssh2_sftp($connection);
+                $this->url->session = ssh2_sftp($connection);
             } else {
                 throw new Exceptions\FsException('Could not authenticate session.');
             }
         }
 
-        return $this->session;
+        return $this->url->session;
     }
     // }}}
     // {{{ authenticateByPassword
@@ -99,8 +99,8 @@ class FsSsh extends Fs
     {
         return ssh2_auth_password(
             $connection,
-            $this->url['user'],
-            $this->url['pass']
+            $this->url->user,
+            $this->url->pass
         );
     }
     // }}}
@@ -127,10 +127,10 @@ class FsSsh extends Fs
 
         $authenticated = ssh2_auth_pubkey_file(
             $connection,
-            $this->url['user'],
+            $this->url->user,
             $public,
             $private,
-            $this->url['pass']
+            $this->url->pass
         );
 
         $private->clean();
@@ -150,17 +150,7 @@ class FsSsh extends Fs
     protected function disconnect()
     {
         $this->connection = null;
-        $this->session = null;
-    }
-    // }}}
-    // {{{ buildUrl
-    protected function buildUrl($parsed)
-    {
-        $path = $parsed['scheme'] . '://';
-        $path .= $this->getSession();
-        $path .= isset($parsed['path']) ? $parsed['path'] : '/';
-
-        return $path;
+        $this->url->session = null;
     }
     // }}}
 

@@ -10,6 +10,7 @@ class Url
     public $pass;
     public $port;
     public $path;
+    public $session = null;
     // }}}
     // {{{ constructor
     public function __construct($url = '')
@@ -20,12 +21,12 @@ class Url
             $parsed = $url;
         }
 
-        $this->scheme   = (isset($parsed['scheme']))    ? $parsed['scheme']                 : null;
-        $this->user     = (isset($parsed['user']))      ? $parsed['user']                   : null;
-        $this->pass     = (isset($parsed['pass']))      ? $parsed['pass']                   : null;
-        $this->host     = (isset($parsed['host']))      ? $parsed['host']                   : null;
-        $this->port     = (isset($parsed['port']))      ? $parsed['port']                   : null;
-        $this->path     = (isset($parsed['path']))      ? $parsed['path']                   : null;
+        $this->scheme   = (isset($parsed['scheme']))    ? $parsed['scheme'] : null;
+        $this->user     = (isset($parsed['user']))      ? $parsed['user']   : null;
+        $this->pass     = (isset($parsed['pass']))      ? $parsed['pass']   : null;
+        $this->host     = (isset($parsed['host']))      ? $parsed['host']   : null;
+        $this->port     = (isset($parsed['port']))      ? $parsed['port']   : null;
+        $this->path     = (isset($parsed['path']))      ? $parsed['path']   : null;
     }
     // }}}
 
@@ -96,11 +97,16 @@ class Url
     public function __toString()
     {
         $path = $this->scheme . '://';
-        $path .= $this->user;
-        $path .= ($this->pass) ? ':' . $this->pass  : '';
-        $path .= ($this->user) ? '@'                : '';
-        $path .= $this->host;
-        $path .= ($this->port) ? ':' . $this->port  : '';
+
+        if ($this->session) {
+            $path .= $this->session;
+        } else {
+            $path .= $this->user;
+            $path .= ($this->pass) ? ':' . $this->pass  : '';
+            $path .= ($this->user) ? '@'                : '';
+            $path .= $this->host;
+            $path .= ($this->port) ? ':' . $this->port  : '';
+        }
         $path .= ($this->path) ? '/' . $this->path  : '/';
 
         return $path;
