@@ -179,7 +179,7 @@ class Fs
         $success = mkdir($absoluteUrl, $mode, $recursive, $this->streamContext);
 
         if (!$success) {
-            throw new Exceptions\FsException('Error while creating directory "' . $absoluteUrl->path . '".');
+            throw new Exceptions\FsException('Error while creating directory "' . $absoluteUrl->errorMessage() . '".');
         }
 
         $this->postCommandHook();

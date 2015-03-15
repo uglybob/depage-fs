@@ -291,7 +291,7 @@ class TestBase extends PHPUnit_Framework_TestCase
     // {{{ testMkdirFail
     /**
      * @expectedException           Depage\Fs\Exceptions\FsException
-     * @expectedExceptionMessage    Error while creating directory "testDir/testSubDir".
+     * @expectedExceptionMessage    Error while creating directory "ftp://testuser:...@localhost:21/Temp/testDir/testSubDir".
      */
     public function testMkdirFail()
     {
