@@ -25,7 +25,7 @@ class Url
         $this->pass     = (isset($parsed['pass']))      ? $parsed['pass']                   : null;
         $this->host     = (isset($parsed['host']))      ? $parsed['host']                   : null;
         $this->port     = (isset($parsed['port']))      ? $parsed['port']                   : null;
-        $this->path     = (isset($parsed['path']))      ? $this->cleanPath($parsed['path']) : null;
+        $this->path     = (isset($parsed['path']))      ? $parsed['path']                   : null;
     }
     // }}}
 
@@ -47,6 +47,12 @@ class Url
         $newPath = implode('/', $newDirs);
 
         return $newPath;
+    }
+    // }}}
+    // {{{ clean
+    public function clean()
+    {
+        $this->path = $this->cleanPath($this->path);
     }
     // }}}
     // {{{ parse

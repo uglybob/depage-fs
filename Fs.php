@@ -16,6 +16,7 @@ class Fs
     public function __construct($params = array())
     {
         $this->url = new Url($params);
+        $this->url->clean();
         $this->hidden = (isset($params['hidden'])) ? $params['hidden'] : false;
 
         $this->streamContext = stream_context_create($this->streamContextOptions);
@@ -64,12 +65,8 @@ class Fs
     public function pwd()
     {
         $this->preCommandHook();
-        // @todo "copy" constructor
-        $pwd = new Url($this->url->__toString());
-        $pwd->prefix($this->base . $this->cwd);
-
         $this->postCommandHook();
-        return $pwd->__toString();
+        return $this->pwdUrl()->__toString();
     }
     // }}}
     // {{{ ls
@@ -200,7 +197,7 @@ class Fs
         $absoluteUrl = $this->absolute($url);
         if (preg_match('/^' . preg_quote($absoluteUrl, '/') . '\//', $this->pwd() . '/')) {
             // @todo error message
-            throw new Exceptions\FsException('Cannot delete current or parent directory "' . $this->pwd() . '".');
+            throw new Exceptions\FsException('Cannot delete current or parent directory "' . $this->pwdUrl()->errorMessage() . '".');
         }
         $this->rmRecursive($url);
 
@@ -328,7 +325,7 @@ class Fs
         $testString = 'depage-fs-test-string';
         $success = false;
 
-//        try {
+        try {
             if (!$this->exists($testFile)) {
                 $this->putString($testFile, $testString);
                 if ($this->getString($testFile) === $testString) {
@@ -336,11 +333,10 @@ class Fs
                     $success = !$this->exists($testFile);
                 }
             }
- /*       } catch (Exceptions\FsException $exception) {
+        } catch (Exceptions\FsException $exception) {
             $error = $exception->getMessage();
             $success = false;
         }
-        */
 
         return $success;
     }
@@ -407,6 +403,7 @@ class Fs
                 $newUrl->prefix($this->base . $this->cwd);
             }
         }
+        $newUrl->clean();
         if (!preg_match(';^' . preg_quote($this->base) . '(.*)$;', $newUrl->path)) {
             throw new Exceptions\FsException('Cannot leave base directory "' . $this->base . '".');
         }
@@ -415,6 +412,16 @@ class Fs
     }
     // }}}
 
+    // {{{ pwdUrl
+    protected function pwdUrl()
+    {
+        // @todo "copy" constructor
+        $pwd = new Url($this->url->__toString());
+        $pwd->prefix($this->base . $this->cwd);
+
+        return $pwd;
+    }
+    // }}}
     // {{{ lsFilter
     protected function lsFilter($path = '', $function)
     {
