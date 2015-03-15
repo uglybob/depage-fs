@@ -232,7 +232,7 @@ class TestBase extends PHPUnit_Framework_TestCase
         $this->fs->cd('testDir');
         $newPwd = $this->fs->pwd();
 
-        $this->assertEquals($pwd . 'testDir/', $newPwd);
+        $this->assertEquals($pwd . '/testDir', $newPwd);
     }
     // }}}
     // {{{ testCdOutOfBaseDir
@@ -243,8 +243,8 @@ class TestBase extends PHPUnit_Framework_TestCase
     public function testCdOutOfBaseDir()
     {
         $basePwd = $this->fs->pwd();
-        $pwd = preg_replace(';Temp/$;', '', $basePwd);
-        $this->assertEquals($pwd . 'Temp/', $basePwd);
+        $pwd = preg_replace(';/Temp$;', '', $basePwd);
+        $this->assertEquals($pwd . '/Temp', $basePwd);
 
         $this->fs->cd($pwd);
     }

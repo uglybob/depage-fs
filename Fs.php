@@ -155,7 +155,7 @@ class Fs
 
         $absoluteUrl = $this->absolute($url);
         if (is_dir($absoluteUrl) && is_readable($absoluteUrl . '/.')) {
-            $this->cwd = str_replace($this->url, '', $absoluteUrl) . '/';
+            $this->cwd = str_replace($this->pwd(), '', $absoluteUrl) . '/';
         } else {
             throw new Exceptions\FsException('Directory not accessible "' . $absoluteUrl->path . '".');
         }
