@@ -11,9 +11,11 @@ class FsFile extends Fs
 
         if ($realPath === false) {
             throw new Exceptions\FsException('Invalid path: "' . $this->url->path . '"');
+        } else {
+            $this->url->path = $realPath;
         }
 
-        return parent::setBase($realPath);
+        return parent::setBase();
     }
     // }}}
     // {{{ rmdir
