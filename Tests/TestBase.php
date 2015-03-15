@@ -291,7 +291,7 @@ class TestBase extends PHPUnit_Framework_TestCase
     // {{{ testMkdirFail
     /**
      * @expectedException           Depage\Fs\Exceptions\FsException
-     * @expectedExceptionMessage    Error while creating directory "ftp://testuser:...@localhost:21/Temp/testDir/testSubDir".
+     * @expectedExceptionMessage    Error while creating directory
      */
     public function testMkdirFail()
     {
@@ -493,15 +493,10 @@ class TestBase extends PHPUnit_Framework_TestCase
     }
     // }}}
 
-    // {{{ testTestSuccess
-    public function testTestSuccess()
+    // {{{ testTest
+    public function testTest()
     {
         $this->assertTrue($this->fs->test());
-    }
-    // }}}
-    // {{{ testTestFail
-    public function testTestFail()
-    {
         $this->deleteRemoteTestDir();
         $this->assertFalse($this->fs->test($error));
         $this->assertContains('file_put_contents', $error);

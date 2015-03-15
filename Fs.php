@@ -324,7 +324,6 @@ class Fs
         $testFile = 'depage-fs-test-file.tmp';
         $testString = 'depage-fs-test-string';
         $success = false;
-
         try {
             if (!$this->exists($testFile)) {
                 $this->putString($testFile, $testString);
@@ -398,6 +397,7 @@ class Fs
             $newUrl->pass = $this->url->pass;
             $newUrl->host = $this->url->host;
             $newUrl->port = $this->url->port;
+            $newUrl->session = $this->url->session;
 
             if (substr($newUrl->path, 0, 1) !== '/') {
                 $newUrl->prefix($this->base . $this->cwd);
