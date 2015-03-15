@@ -15,18 +15,28 @@ class Url
     // {{{ constructor
     public function __construct($url = '')
     {
-        if (is_string($url)) {
-            $parsed = $this->parse($url);
-        } elseif (is_array($url)) {
-            $parsed = $url;
-        }
+        if (is_a($url, 'Depage\Fs\Url')) {
+            $this->scheme   = $url->scheme;
+            $this->user     = $url->user;
+            $this->pass     = $url->pass;
+            $this->host     = $url->host;
+            $this->port     = $url->port;
+            $this->path     = $url->path;
+            $this->session  = $url->session;
+        } else {
+            if (is_string($url)) {
+                $parsed = $this->parse($url);
+            } elseif (is_array($url)) {
+                $parsed = $url;
+            }
 
-        $this->scheme   = (isset($parsed['scheme']))    ? $parsed['scheme'] : null;
-        $this->user     = (isset($parsed['user']))      ? $parsed['user']   : null;
-        $this->pass     = (isset($parsed['pass']))      ? $parsed['pass']   : null;
-        $this->host     = (isset($parsed['host']))      ? $parsed['host']   : null;
-        $this->port     = (isset($parsed['port']))      ? $parsed['port']   : null;
-        $this->path     = (isset($parsed['path']))      ? $parsed['path']   : null;
+            $this->scheme   = (isset($parsed['scheme']))    ? $parsed['scheme'] : null;
+            $this->user     = (isset($parsed['user']))      ? $parsed['user']   : null;
+            $this->pass     = (isset($parsed['pass']))      ? $parsed['pass']   : null;
+            $this->host     = (isset($parsed['host']))      ? $parsed['host']   : null;
+            $this->port     = (isset($parsed['port']))      ? $parsed['port']   : null;
+            $this->path     = (isset($parsed['path']))      ? $parsed['path']   : null;
+        }
     }
     // }}}
 

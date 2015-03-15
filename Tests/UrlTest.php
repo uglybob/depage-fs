@@ -82,17 +82,17 @@ class UrlTest extends PHPUnit_Framework_TestCase
     public function testCleanPath()
     {
         $this->assertEquals('',                 Url::cleanPath(''));
-        $this->assertEquals('/',                Url::cleanPath('/'));
+        $this->assertEquals('',                 Url::cleanPath('/'));
         $this->assertEquals('path',             Url::cleanPath('path'));
         $this->assertEquals('path',             Url::cleanPath('path/'));
-        $this->assertEquals('/path',            Url::cleanPath('/path'));
-        $this->assertEquals('/path',            Url::cleanPath('/path/'));
+        $this->assertEquals('path',             Url::cleanPath('/path'));
+        $this->assertEquals('path',             Url::cleanPath('/path/'));
         $this->assertEquals('path/to/file',     Url::cleanPath('path/to/file'));
-        $this->assertEquals('/path/to/file',    Url::cleanPath('/path/to/file'));
-        $this->assertEquals('/path/to/file',    Url::cleanPath('/path/to/file/'));
-        $this->assertEquals('/path/file',       Url::cleanPath('/path/to/../file'));
-        $this->assertEquals('/path/to/file',    Url::cleanPath('/path/to/./file'));
-        $this->assertEquals('/file',            Url::cleanPath('/path/../../file'));
+        $this->assertEquals('path/to/file',     Url::cleanPath('/path/to/file'));
+        $this->assertEquals('path/to/file',     Url::cleanPath('/path/to/file/'));
+        $this->assertEquals('path/file',        Url::cleanPath('/path/to/../file'));
+        $this->assertEquals('path/to/file',     Url::cleanPath('/path/to/./file'));
+        $this->assertEquals('file',             Url::cleanPath('/path/../../file'));
     }
     // }}}
 }
