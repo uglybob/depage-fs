@@ -68,7 +68,7 @@ class FsFileTest extends TestBase
         $this->fs->cd('file://' . $this->remoteDir . '/testDir');
         $newPwd = $this->fs->pwd();
 
-        $this->assertEquals($pwd . 'testDir/', $newPwd);
+        $this->assertEquals($pwd . '/testDir', $newPwd);
     }
     // }}}
     // {{{ testMkdirFail
