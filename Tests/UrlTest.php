@@ -26,7 +26,7 @@ class UrlTest extends PHPUnit_Framework_TestCase
         $this->assertEquals($expected, Url::parse('testScheme://testUser:testPass@testHost:42/path/to/file'));
     }
     // }}}
-    // {{{ testParseUrl
+    // {{{ testParseUrlPath
     public function testParseUrlPath()
     {
         $this->assertEquals(array('path'=>''),          Url::parse(''));
@@ -76,6 +76,23 @@ class UrlTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('.extension', (new Url('path/to/.extension'))->getFileName());
         $this->assertEquals('.extension', (new Url('/.extension'))->getFileName());
         $this->assertEquals('.extension', (new Url('.extension'))->getFileName());
+    }
+    // }}}
+    // {{{ testCleanPath
+    public function testCleanPath()
+    {
+        $this->assertEquals('',                 Url::cleanPath(''));
+        $this->assertEquals('/',                Url::cleanPath('/'));
+        $this->assertEquals('path',             Url::cleanPath('path'));
+        $this->assertEquals('path',             Url::cleanPath('path/'));
+        $this->assertEquals('/path',            Url::cleanPath('/path'));
+        $this->assertEquals('/path',            Url::cleanPath('/path/'));
+        $this->assertEquals('path/to/file',     Url::cleanPath('path/to/file'));
+        $this->assertEquals('/path/to/file',    Url::cleanPath('/path/to/file'));
+        $this->assertEquals('/path/to/file',    Url::cleanPath('/path/to/file/'));
+        $this->assertEquals('/path/file',       Url::cleanPath('/path/to/../file'));
+        $this->assertEquals('/path/to/file',    Url::cleanPath('/path/to/./file'));
+        $this->assertEquals('/file',            Url::cleanPath('/path/../../file'));
     }
     // }}}
 }

@@ -44,8 +44,7 @@ class Url
             }
         }
 
-        $newPath = (substr($path, 0, 1) == '/') ? '/' : '';
-        $newPath .= implode('/', $newDirs);
+        $newPath = implode('/', $newDirs);
 
         return $newPath;
     }
@@ -107,11 +106,11 @@ class Url
         // @todo boilerplate
         $path = $this->scheme . '://';
         $path .= $this->user;
-        $path .= ($this->pass) ? ':...' : '';
+        $path .= ($this->pass) ? ':...'             : '';
         $path .= ($this->user) ? '@'                : '';
         $path .= $this->host;
         $path .= ($this->port) ? ':' . $this->port  : '';
-        $path .= ($this->path) ? $this->path        : '/';
+        $path .= ($this->path) ? '/' . $this->path  : '/';
 
         return $path;
     }

@@ -78,7 +78,7 @@ class Fs
         $this->preCommandHook();
 
         $lsUrl = $this->absolute($url);
-        $path = str_replace($this->pwd(), '', $lsUrl);
+        $path = str_replace($this->pwd() . '/', '', $lsUrl);
         $ls = $this->lsRecursive($path, '');
 
         $this->postCommandHook();
@@ -387,7 +387,8 @@ class Fs
     protected function setBase()
     {
         $trimmed = trim($this->url->path, '/');
-        $this->base = ($trimmed) ? '/' . $trimmed . '/' : '/';
+        $this->base = ($trimmed) ? $trimmed . '/' : '/';
+        $this->url->path = '';
     }
     // }}}
     // {{{ absolute
@@ -423,7 +424,7 @@ class Fs
         $lsFiltered = array_filter(
             $ls,
             function ($element) use ($function, $pwd) {
-                return $function($pwd . $element);
+                return $function($pwd . '/' . $element);
             }
         );
         natcasesort($lsFiltered);
@@ -443,7 +444,7 @@ class Fs
             $pattern = array_shift($patterns);
             if (preg_match('/[\*\?\[\]]/', $pattern)) {
                 $matches = array_filter(
-                    $this->scandir($current),
+                    $this->scandir($this->pwd() . '/' . $current),
                     function ($node) use ($pattern) { return fnmatch($pattern, $node); }
                 );
             } else {
@@ -456,7 +457,7 @@ class Fs
                 if ($count == 1) {
                     $result[] = $next;
                     // @todo speed up (get rid of clean call)
-                } elseif (is_dir($this->pwd() . $next)) {
+                } elseif (is_dir($this->pwd() . '/' . $next)) {
                     $result = array_merge(
                         $result,
                         $this->lsRecursive(implode('/', $patterns), $next)
@@ -498,12 +499,11 @@ class Fs
     protected function scandir($url = '', $hidden = null)
     {
         // @todo rename cleanUrl, concate
-        $cleanUrl = $this->absolute($url);
         if ($hidden === null) {
             $hidden = $this->hidden;
         }
 
-        $scanDir = scandir($cleanUrl, 0, $this->streamContext);
+        $scanDir = scandir($url, 0, $this->streamContext);
         $filtered = array_diff($scanDir, array('.', '..'));
 
         if (!$hidden) {
