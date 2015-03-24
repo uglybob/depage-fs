@@ -4,6 +4,13 @@ use Depage\Fs\Url;
 
 class UrlTest extends PHPUnit_Framework_TestCase
 {
+    protected function cleanUrl($url, $path)
+    {
+        $url->path = $path;
+        $url->clean();
+        return $url->__toString();
+    }
+
     // {{{ testParse
     public function testParse()
     {
@@ -82,17 +89,65 @@ class UrlTest extends PHPUnit_Framework_TestCase
     public function testCleanPath()
     {
         $this->assertEquals('',                 Url::cleanPath(''));
-        $this->assertEquals('',                 Url::cleanPath('/'));
+        $this->assertEquals('/',                 Url::cleanPath('/'));
         $this->assertEquals('path',             Url::cleanPath('path'));
         $this->assertEquals('path',             Url::cleanPath('path/'));
-        $this->assertEquals('path',             Url::cleanPath('/path'));
-        $this->assertEquals('path',             Url::cleanPath('/path/'));
+        $this->assertEquals('/path',             Url::cleanPath('/path'));
+        $this->assertEquals('/path',             Url::cleanPath('/path/'));
         $this->assertEquals('path/to/file',     Url::cleanPath('path/to/file'));
-        $this->assertEquals('path/to/file',     Url::cleanPath('/path/to/file'));
-        $this->assertEquals('path/to/file',     Url::cleanPath('/path/to/file/'));
-        $this->assertEquals('path/file',        Url::cleanPath('/path/to/../file'));
-        $this->assertEquals('path/to/file',     Url::cleanPath('/path/to/./file'));
-        $this->assertEquals('file',             Url::cleanPath('/path/../../file'));
+        $this->assertEquals('/path/to/file',     Url::cleanPath('/path/to/file'));
+        $this->assertEquals('/path/to/file',     Url::cleanPath('/path/to/file/'));
+        $this->assertEquals('/path/file',        Url::cleanPath('/path/to/../file'));
+        $this->assertEquals('/path/to/file',     Url::cleanPath('/path/to/./file'));
+        $this->assertEquals('/file',             Url::cleanPath('/path/../../file'));
+    }
+    // }}}
+
+    // {{{ testCleanUrl
+    public function testCleanUrl()
+    {
+        $params = array(
+            'scheme' => 'testScheme',
+            'user' => 'testUser',
+            'pass' => 'testPass',
+            'host' => 'testHost',
+            'port' => 42,
+        );
+
+        $url = new Url($params);
+        $this->assertEquals('testScheme://testUser:testPass@testHost:42/path/to/file', $this->cleanUrl($url, 'path/to/file'));
+        $this->assertEquals('testScheme://testUser:testPass@testHost:42/path/to/file', $this->cleanUrl($url, '/path/to/file'));
+        $this->assertEquals('testScheme://testUser:testPass@testHost:42/path/to/directory', $this->cleanUrl($url, '/path/to/directory/'));
+    }
+    // }}}
+    // {{{ testCleanUrlSpecialCharacters
+    public function testCleanUrlSpecialCharacters()
+    {
+        $params = array('scheme' => 'testScheme');
+        $url = new Url($params);
+
+        $this->assertEquals('testScheme:///path',           $this->cleanUrl($url, 'path'));
+        $this->assertEquals('testScheme:///path/to/file',   $this->cleanUrl($url, 'path/to/file'));
+        $this->assertEquals('testScheme:///path/to/file',   $this->cleanUrl($url, '/path/to/file'));
+        $this->assertEquals('testScheme:/// ',              $this->cleanUrl($url, ' '));
+        $this->assertEquals('testScheme:///pa h/to/fi e',   $this->cleanUrl($url, '/pa h/to/fi e'));
+        $this->assertEquals('testScheme:///?',              $this->cleanUrl($url, '?'));
+        $this->assertEquals('testScheme:///pa?h/to/fi?e',   $this->cleanUrl($url, '/pa?h/to/fi?e'));
+        $this->assertEquals('testScheme:///|',              $this->cleanUrl($url, '|'));
+        $this->assertEquals('testScheme:///pa|h/to/fi|e',   $this->cleanUrl($url, '/pa|h/to/fi|e'));
+        $this->assertEquals('testScheme:///<',              $this->cleanUrl($url, '<'));
+        $this->assertEquals('testScheme:///>',              $this->cleanUrl($url, '>'));
+        $this->assertEquals('testScheme:///pa<h/to/fi>e',   $this->cleanUrl($url, '/pa<h/to/fi>e'));
+        $this->assertEquals('testScheme:///(',              $this->cleanUrl($url, '('));
+        $this->assertEquals('testScheme:///)',              $this->cleanUrl($url, ')'));
+        $this->assertEquals('testScheme:///pa(h/to/fi)e',   $this->cleanUrl($url, '/pa(h/to/fi)e'));
+        $this->assertEquals('testScheme:///[',              $this->cleanUrl($url, '['));
+        $this->assertEquals('testScheme:///]',              $this->cleanUrl($url, ']'));
+        $this->assertEquals('testScheme:///pa[h/to/fi]e',   $this->cleanUrl($url, '/pa[h/to/fi]e'));
+        $this->assertEquals('testScheme:///"',              $this->cleanUrl($url, '"'));
+        $this->assertEquals('testScheme:///pa"h/to/fi"e',   $this->cleanUrl($url, '/pa"h/to/fi"e'));
+        $this->assertEquals('testScheme:///\'',             $this->cleanUrl($url, '\''));
+        $this->assertEquals('testScheme:///pa\'h/to/fi\'e', $this->cleanUrl($url, '/pa\'h/to/fi\'e'));
     }
     // }}}
 }

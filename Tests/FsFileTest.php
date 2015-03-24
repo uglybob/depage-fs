@@ -1,5 +1,7 @@
 <?php
 
+use Depage\Fs\Fs;
+
 class FsFileTest extends TestBase
 {
     // {{{ createTestObject
@@ -79,6 +81,16 @@ class FsFileTest extends TestBase
     public function testMkdirFail()
     {
         return parent::testMkdirFail();
+    }
+    // }}}
+
+    // {{{ testCleanUrlFile
+    public function testCleanUrlFile()
+    {
+        var_dump('file://' . getcwd());
+        $this->assertEquals('file://' . getcwd(), Fs::factory('file://' . getcwd())->pwd());
+        $this->assertEquals('file://' . getcwd(), Fs::factory('')->pwd());
+        $this->assertEquals('file://' . getcwd(), Fs::factory(getcwd())->pwd());
     }
     // }}}
 }

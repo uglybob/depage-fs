@@ -55,7 +55,8 @@ class Url
             }
         }
 
-        $newPath = implode('/', $newDirs);
+        $newPath = (substr($path, 0, 1) == '/') ? '/' : '';
+        $newPath .= implode('/', $newDirs);
 
         return $newPath;
     }
