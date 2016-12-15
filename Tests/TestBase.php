@@ -4,87 +4,30 @@ namespace Depage\Fs\Tests;
 
 class TestBase extends \PHPUnit_Framework_TestCase
 {
+    // {{{ constructor
+    public function __construct()
+    {
+        $this->root = __DIR__;
+    }
+    // }}}
+
     // {{{ setUp
     public function setUp()
     {
-        $this->testRootDir = __DIR__;
-        $this->localDir = $this->createLocalTestDir();
-        $this->remoteDir = $this->createRemoteTestDir();
+        $this->assertTrue($this->src->setUp());
+        $this->assertTrue($this->dst->setUp());
+        $this->assertTrue(chdir($this->src->getPath()));
 
-        chdir($this->localDir);
         $this->fs = $this->createTestObject();
     }
     // }}}
     // {{{ tearDown
     public function tearDown()
     {
-        $this->deleteRemoteTestDir();
-        $this->deleteLocalTestDir();
-        chdir($this->testRootDir);
-    }
-    // }}}
-    // {{{ rmr
-    protected function rmr($path)
-    {
-        if (is_dir($path)) {
-            $scanDir = array_diff(scandir($path), array('.', '..'));
+        $this->assertTrue($this->src->tearDown());
+        $this->assertTrue($this->dst->tearDown());
 
-            foreach ($scanDir as $nested) {
-                $this->rmr($path . '/' . $nested);
-            }
-            rmdir($path);
-        } elseif (is_file($path)) {
-            unlink($path);
-        }
-    }
-    // }}}
-
-    // {{{ createLocalTestDir
-    public function createLocalTestDir()
-    {
-        $dir = $this->testRootDir . '/Temp';
-
-        if (file_exists($dir)) {
-            $this->rmr($dir);
-            if (file_exists($dir)) {
-                $this->fail('Test directory not clean: ' . $dir);
-            }
-        }
-
-        mkdir($dir, 0777);
-        $this->assertTrue(is_dir($dir));
-
-        return $dir;
-    }
-    // }}}
-    // {{{ deleteLocalTestDir
-    public function deleteLocalTestDir()
-    {
-        $this->rmr($this->localDir);
-    }
-    // }}}
-    // {{{ createLocalTestFile
-    protected function createLocalTestFile($path, $contents = 'testString')
-    {
-        $testFile = fopen($path, 'w');
-        fwrite($testFile, $contents);
-        fclose($testFile);
-
-        $this->assertTrue($this->confirmLocalTestFile($path, $contents));
-    }
-    // }}}
-    // {{{ confirmLocalTestFile
-    protected function confirmLocalTestFile($path, $contents = 'testString')
-    {
-        $file = file($path);
-
-        return $file === array($contents);
-    }
-    // }}}
-    // {{{ confirmRemoteTestFile
-    protected function confirmRemoteTestFile($path, $contents = 'testString')
-    {
-        return $this->confirmLocalTestFile($this->remoteDir . '/' . $path, $contents);
+        $this->assertTrue(chdir($this->root));
     }
     // }}}
 
@@ -92,25 +35,6 @@ class TestBase extends \PHPUnit_Framework_TestCase
     protected function assertEqualFiles($expectedPath, $actualPath, $message = 'Failed asserting that two files are equal.')
     {
         $this->assertEquals(sha1_file($expectedPath), $this->sha1File($actualPath), $message);
-    }
-    // }}}
-
-    // {{{ isDir
-    protected function isDir($path)
-    {
-        return is_dir($path);
-    }
-    // }}}
-    // {{{ isFile
-    protected function isFile($path)
-    {
-        return is_file($path);
-    }
-    // }}}
-    // {{{ sha1File
-    protected function sha1File($path)
-    {
-        return sha1_file($path);
     }
     // }}}
 
