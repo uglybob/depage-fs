@@ -4,6 +4,24 @@ namespace Depage\Fs\Tests;
 
 class FsFileTest extends OperationsTestCase
 {
+    // {{{ setUp
+    public function setUp()
+    {
+        $this->assertTrue($this->src->setUp());
+        $this->assertTrue(chdir($this->src->getPath()));
+
+        $this->fs = $this->createTestObject();
+    }
+    // }}}
+    // {{{ tearDown
+    public function tearDown()
+    {
+        $this->assertTrue($this->src->tearDown());
+
+        $this->assertTrue(chdir($this->root));
+    }
+    // }}}
+
     // {{{ createSrc
     protected function createSrc()
     {
@@ -13,7 +31,20 @@ class FsFileTest extends OperationsTestCase
     // {{{ createDst
     protected function createDst()
     {
-        return new FsLocal($this->root . '/Temp2');
+        return $this->src;
+    }
+    // }}}
+    // {{{ createTestObject
+    protected function createTestObject($override = array())
+    {
+        $params = [
+            'scheme' => 'file',
+            'path' => '\Temp',
+        ];
+
+        $newParams = array_merge($params, $override);
+
+        return new FsFileTestClass($newParams);
     }
     // }}}
 
@@ -21,19 +52,20 @@ class FsFileTest extends OperationsTestCase
     public function testGet()
     {
         // file-scheme: create subdirectory so we don't overwrite the 'local' file
-        $this->mkdirRemote('testDir');
-        $this->createRemoteTestFile('testDir/testFile');
+        $this->mkdirDst('testDir');
+        $this->createFileDst('testDir/testFile');
 
         $this->fs->cd('testDir');
         $this->fs->get('testFile');
-        $this->assertTrue($this->confirmLocalTestFile('testFile'));
+        $this->assertTrue($this->checkFileSrc('testFile'));
     }
     // }}}
     // {{{ testCdIntoWrapperUrl
     public function testCdIntoWrapperUrl()
     {
         $pwd = $this->fs->pwd();
-        mkdir($this->remoteDir . '/testDir');
+        $this->mkdirDst('testDir');
+
         $this->fs->cd('file://' . $this->remoteDir . '/testDir');
         $newPwd = $this->fs->pwd();
 
