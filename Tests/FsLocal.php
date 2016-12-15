@@ -5,13 +5,13 @@ namespace Depage\Fs\Tests;
 class FsLocal
 {
     // {{{ constructor
-    public function __construct($testPath)
+    public function __construct($path)
     {
-        $this->path = $testPath . '/Test';
+        $this->path = $path;
     }
     // }}}
-    // {{{ setup
-    public function setup()
+    // {{{ setUp
+    public function setUp()
     {
         $result = true;
 
@@ -25,11 +25,26 @@ class FsLocal
         return $result;
     }
     // }}}
+    // {{{ tearDown
+    public function tearDown()
+    {
+        return $this->rm($this->path);
+    }
+    // }}}
+
+    // {{{ translatePath
+    protected function translatePath($path)
+    {
+        return $this->path . '/' . $path;
+    }
+    // }}}
 
     // {{{ createFile
     public function createFile($path = 'testFile', $contents = 'testString')
     {
-        $testFile = fopen($path, 'w');
+        $newPath = $this->translatePath($path);
+
+        $testFile = fopen($newPath, 'w');
         fwrite($testFile, $contents);
         fclose($testFile);
 
@@ -39,7 +54,7 @@ class FsLocal
     // {{{ checkFile
     public function checkFile($path = 'testFile', $contents = 'testString')
     {
-        $file = file($path);
+        $file = file($this->translatePath($path));
 
         return $file === [$contents];
     }
@@ -57,7 +72,7 @@ class FsLocal
                 $result = $result && $this->rm($path . '/' . $nested);
             }
             $result = $result && $this->rmdir($path);
-        } elseif (is_file($path)) {
+        } elseif ($this->is_file($path)) {
             $result = $result && $this->unlink($path);
         }
 
@@ -67,45 +82,54 @@ class FsLocal
     // {{{ rmdir
     public function rmdir($path)
     {
-        return \rmdir($path);
+        return \rmdir($this->translatePath($path));
     }
     // }}}
     // {{{ mkdir
     public function mkdir($path)
     {
-        return \mkdir($path);
+        return \mkdir($this->translatePath($path));
     }
     // }}}
     // {{{ file_exists
     public function file_exists($path)
     {
-        return \file_exists($path);
+        return \file_exists($this->translatePath($path));
     }
     // }}}
     // {{{ unlink
     public function unlink($path)
     {
-        return \unlink($path);
+        return \unlink($this->translatePath($path));
+    }
+    // }}}
+    // {{{ touch
+    public function touch($path, $mode = 0777)
+    {
+        $path = $this->translatePath($path);
+        $result = \touch($path, $mode);
+
+        return $result && chmod($path, $mode);
     }
     // }}}
 
     // {{{ is_dir
     public function is_dir($path)
     {
-        return \is_dir($path);
+        return \is_dir($this->translatePath($path));
     }
     // }}}
     // {{{ is_file
     public function is_file($path)
     {
-        return \is_file($path);
+        return \is_file($this->translatePath($path));
     }
     // }}}
 
     // {{{ sha1_file
     public function sha1_file($path)
     {
-        return \sha1_file($path);
+        return \sha1_file($this->translatePath($path));
     }
     // }}}
 }

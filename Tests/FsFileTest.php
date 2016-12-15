@@ -2,51 +2,18 @@
 
 namespace Depage\Fs\Tests;
 
-class FsFileTest extends TestBase
+class FsFileTest extends OperationsTestCase
 {
-    // {{{ createTestObject
-    public function createTestObject($override = array())
+    // {{{ createSrc
+    protected function createSrc()
     {
-        $params = array('scheme' => 'file');
-        $newParams = array_merge($params, $override);
-
-        return new FsFileTestClass($newParams);
+        return new FsLocal($this->root . '/Temp');
     }
     // }}}
-
-    // {{{ mkdirRemote
-    protected function mkdirRemote($path, $mode = 0777, $recursive = true)
+    // {{{ createDst
+    protected function createDst()
     {
-        $remotePath = $this->remoteDir . '/' . $path;
-        mkdir($remotePath, $mode, $recursive);
-        chmod($remotePath, $mode);
-    }
-    // }}}
-    // {{{ touchRemote
-    protected function touchRemote($path, $mode = 0777)
-    {
-        $remotePath = $this->remoteDir . '/' . $path;
-        touch($remotePath, $mode);
-        chmod($remotePath, $mode);
-    }
-    // }}}
-
-    // {{{ createRemoteTestDir
-    public function createRemoteTestDir()
-    {
-        return $this->localDir;
-    }
-    // }}}
-    // {{{ deleteRemoteTestDir
-    public function deleteRemoteTestDir()
-    {
-        $this->rmr($this->localDir);
-    }
-    // }}}
-    // {{{ createRemoteTestFile
-    public function createRemoteTestFile($path, $contents = 'testString')
-    {
-        $this->createLocalTestFile($path, $contents);
+        return new FsLocal($this->root . '/Temp2');
     }
     // }}}
 

@@ -2,12 +2,14 @@
 
 namespace Depage\Fs\Tests;
 
-class TestBase extends \PHPUnit_Framework_TestCase
+abstract class OperationsTestCase extends \PHPUnit_Framework_TestCase
 {
     // {{{ constructor
     public function __construct()
     {
         $this->root = __DIR__;
+        $this->src = $this->createSrc();
+        $this->dst = $this->createDst();
     }
     // }}}
 
@@ -34,17 +36,43 @@ class TestBase extends \PHPUnit_Framework_TestCase
     // {{{ assertEqualFiles
     protected function assertEqualFiles($expectedPath, $actualPath, $message = 'Failed asserting that two files are equal.')
     {
-        $this->assertEquals(sha1_file($expectedPath), $this->sha1File($actualPath), $message);
+        $this->assertEquals($this->src->sha1_file($expectedPath), $this->dst->sha1_file($actualPath), $message);
+    }
+    // }}}
+    // {{{ mkdirSrc
+    protected function mkdirSrc($path)
+    {
+        $this->assertTrue($this->src->mkdir($path));
+        $this->assertTrue($this->src->is_dir($path));
+    }
+    // }}}
+    // {{{ mkdirDst
+    protected function mkdirDst($path)
+    {
+        $this->assertTrue($this->dst->mkdir($path));
+        $this->assertTrue($this->dst->is_dir($path));
+    }
+    // }}}
+    // {{{ touchSrc
+    protected function touchSrc($path, $mode = 0777)
+    {
+        $this->assertTrue($this->src->touch($path, $mode));
+    }
+    // }}}
+    // {{{ touchDst
+    protected function touchDst($path, $mode = 0777)
+    {
+        $this->assertTrue($this->dst->touch($path, $mode));
     }
     // }}}
 
     // {{{ testLs
     public function testLs()
     {
-        $this->mkdirRemote('testDir');
-        $this->mkdirRemote('testAnotherDir');
-        $this->touchRemote('testFile');
-        $this->touchRemote('testAnotherFile');
+        $this->mkdirDst('testDir');
+        $this->mkdirDst('testAnotherDir');
+        $this->touchDst('testFile');
+        $this->touchDst('testAnotherFile');
 
         $lsReturn = $this->fs->ls('*');
         $expected = array(
@@ -60,10 +88,10 @@ class TestBase extends \PHPUnit_Framework_TestCase
     // {{{ testLsDir
     public function testLsDir()
     {
-        $this->mkdirRemote('testDir');
-        $this->mkdirRemote('testAnotherDir');
-        $this->touchRemote('testFile');
-        $this->touchRemote('testAnotherFile');
+        $this->mdkirDst('testDir');
+        $this->mdkirDst('testAnotherDir');
+        $this->touchDst('testFile');
+        $this->touchDst('testAnotherFile');
 
         $lsDirReturn = $this->fs->lsDir('*');
         $expected = array(
@@ -77,10 +105,10 @@ class TestBase extends \PHPUnit_Framework_TestCase
     // {{{ testLsFiles
     public function testLsFiles()
     {
-        $this->mkdirRemote('testDir');
-        $this->mkdirRemote('testAnotherDir');
-        $this->touchRemote('testFile');
-        $this->touchRemote('testAnotherFile');
+        $this->mdkirDst('testDir');
+        $this->mdkirDst('testAnotherDir');
+        $this->touchDst('testFile');
+        $this->touchDst('testAnotherFile');
 
         $lsFilesReturn = $this->fs->lsFiles('*');
         $expected = array(
@@ -94,10 +122,10 @@ class TestBase extends \PHPUnit_Framework_TestCase
     // {{{ testLsHidden
     public function testLsHidden()
     {
-        $this->mkdirRemote('testDir');
-        $this->mkdirRemote('.testHiddenDir');
-        $this->touchRemote('testFile');
-        $this->touchRemote('.testHiddenFile');
+        $this->mdkirDst('testDir');
+        $this->mdkirDst('.testHiddenDir');
+        $this->touchDst('testFile');
+        $this->touchDst('.testHiddenFile');
 
         $lsReturn = $this->fs->ls('*');
         $expected = array(
@@ -124,14 +152,14 @@ class TestBase extends \PHPUnit_Framework_TestCase
     // {{{ testLsRecursive
     public function testLsRecursive()
     {
-        $this->mkdirRemote('testDir/abc/abc/abc');
-        $this->mkdirRemote('testDir/abc/abcd/abcd');
-        $this->mkdirRemote('testDir/abc/abcde/abcde');
-        $this->mkdirRemote('testDir/abcd/abcde/abcde');
-        $this->touchRemote('testDir/abcFile');
-        $this->touchRemote('testDir/abc/abcFile');
-        $this->touchRemote('testDir/abc/abcd/abcFile');
-        $this->touchRemote('testDir/abcd/abcde/abcde/abcFile');
+        $this->mdkirDst('testDir/abc/abc/abc');
+        $this->mdkirDst('testDir/abc/abcd/abcd');
+        $this->mdkirDst('testDir/abc/abcde/abcde');
+        $this->mdkirDst('testDir/abcd/abcde/abcde');
+        $this->touchDst('testDir/abcFile');
+        $this->touchDst('testDir/abc/abcFile');
+        $this->touchDst('testDir/abc/abcd/abcFile');
+        $this->touchDst('testDir/abcd/abcde/abcde/abcFile');
 
         $globReturn = $this->fs->ls('testDir');
         $this->assertEquals(array('testDir'), $globReturn);
@@ -174,7 +202,7 @@ class TestBase extends \PHPUnit_Framework_TestCase
     public function testCd()
     {
         $pwd = $this->fs->pwd();
-        $this->mkdirRemote('testDir');
+        $this->mdkirDst('testDir');
         $this->fs->cd('testDir');
         $newPwd = $this->fs->pwd();
 
@@ -245,7 +273,7 @@ class TestBase extends \PHPUnit_Framework_TestCase
     // {{{ testMkdirRecursiveExists
     public function testMkdirRecursiveExists()
     {
-        $this->mkdirRemote('testDir');
+        $this->mdkirDst('testDir');
         $this->assertFalse($this->isDir($this->remoteDir . 'testDir/testSubDir'));
 
         $this->fs->mkdir('testDir/testSubDir');
@@ -281,7 +309,7 @@ class TestBase extends \PHPUnit_Framework_TestCase
     // {{{ testRmDir
     public function testRmDir()
     {
-        $this->mkdirRemote('testDir');
+        $this->mdkirDst('testDir');
 
         $this->fs->rm('testDir');
 
@@ -291,7 +319,7 @@ class TestBase extends \PHPUnit_Framework_TestCase
     // {{{ testRmRecursive
     public function testRmRecursive()
     {
-        $this->mkdirRemote('testDir/testSubDir');
+        $this->mdkirDst('testDir/testSubDir');
         $this->createRemoteTestFile('testDir/testFile');
         $this->createRemoteTestFile('testDir/testSubDir/testFile');
 
@@ -318,7 +346,7 @@ class TestBase extends \PHPUnit_Framework_TestCase
      */
     public function testRmCurrent()
     {
-        $this->mkdirRemote('testDir');
+        $this->mdkirDst('testDir');
 
         $this->fs->cd('testDir');
         $this->fs->rm('../testDir');
@@ -331,7 +359,7 @@ class TestBase extends \PHPUnit_Framework_TestCase
      */
     public function testRmParentDirOfCurrent()
     {
-        $this->mkdirRemote('testDir/testSubDir');
+        $this->mdkirDst('testDir/testSubDir');
 
         $pwd = $this->fs->pwd();
         $this->fs->cd('testDir/testSubDir');
@@ -364,7 +392,7 @@ class TestBase extends \PHPUnit_Framework_TestCase
     public function testMvIntoDirectory()
     {
         $this->createRemoteTestFile('testFile');
-        $this->mkdirRemote('testDir');
+        $this->mdkirDst('testDir');
 
         $this->fs->mv('testFile', 'testDir');
         $this->assertTrue($this->confirmRemoteTestFile('testDir/testFile'));
@@ -377,7 +405,7 @@ class TestBase extends \PHPUnit_Framework_TestCase
      */
     public function testMvSourceDoesntExist()
     {
-        $this->mkdirRemote('testDir');
+        $this->mdkirDst('testDir');
         $this->assertFalse($this->isFile($this->remoteDir . '/testFile'));
 
         $this->fs->mv('testFile', 'testDir/testFile');
@@ -456,7 +484,7 @@ class TestBase extends \PHPUnit_Framework_TestCase
     // {{{ testExistsDir
     public function testExistsDir()
     {
-        $this->mkdirRemote('testDir');
+        $this->mdkirDst('testDir');
 
         $this->assertTrue($this->fs->exists('testDir'));
         $this->assertFalse($this->fs->exists('i_dont_exist'));
