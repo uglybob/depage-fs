@@ -40,12 +40,6 @@ abstract class LocalOperationsTestCase extends \PHPUnit_Framework_TestCase
     }
     // }}}
 
-    // {{{ assertEqualFiles
-    protected function assertEqualFiles($expectedPath, $actualPath, $message = 'Failed asserting that two files are equal.')
-    {
-        $this->assertEquals($this->src->sha1_file($expectedPath), $this->dst->sha1_file($actualPath), $message);
-    }
-    // }}}
     // {{{ mkdirSrc
     protected function mkdirSrc($path)
     {
@@ -73,13 +67,13 @@ abstract class LocalOperationsTestCase extends \PHPUnit_Framework_TestCase
     }
     // }}}
     // {{{ createFileSrc
-    protected function createFileSrc($path, $contents)
+    protected function createFileSrc($path = 'testFile', $contents = 'testString')
     {
         $this->assertTrue($this->src->createFile($path, $contents));
     }
     // }}}
     // {{{ createFileDst
-    protected function createFileDst($path, $contents)
+    protected function createFileDst($path = 'testFile', $contents = 'testString')
     {
         $this->assertTrue($this->dst->createFile($path, $contents));
     }
@@ -475,7 +469,7 @@ abstract class LocalOperationsTestCase extends \PHPUnit_Framework_TestCase
         $this->assertTrue(is_file('/bin/bash'));
         $this->fs->put('/bin/bash', 'bash');
 
-        $this->assertEqualFiles('/bin/bash', 'bash');
+        $this->assertSame(sha1_file('/bin/bash'), $this->dst->sha1_file('bash'), 'Failed asserting that two files are equal.');
     }
     // }}}
     // {{{ testPutOverwrite
@@ -548,7 +542,7 @@ abstract class LocalOperationsTestCase extends \PHPUnit_Framework_TestCase
     public function testTest()
     {
         $this->assertTrue($this->fs->test());
-        $this->deleteRemoteTestDir();
+        $this->assertTrue($this->dst->tearDown());
         $this->assertFalse($this->fs->test($error));
         $this->assertContains('file_put_contents', $error);
     }

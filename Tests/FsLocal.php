@@ -35,7 +35,7 @@ class FsLocal
     // {{{ tearDown
     public function tearDown()
     {
-        return $this->rm('/Temp');
+        return $this->rm('');
     }
     // }}}
 
@@ -83,7 +83,7 @@ class FsLocal
             $result = $result && $this->unlink($path);
         }
 
-        return $result;
+        return $result && !$this->file_exists($path);
     }
     // }}}
     // {{{ rmdir

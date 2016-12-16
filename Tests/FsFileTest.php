@@ -50,7 +50,7 @@ class FsFileTest extends LocalOperationsTestCase
 
         $this->fs->cd('testDir');
         $this->fs->get('testFile');
-        $this->assertTrue($this->checkFileSrc('testFile'));
+        $this->assertTrue($this->src->checkFile('testFile'));
     }
     // }}}
     // {{{ testCdIntoWrapperUrl
@@ -59,7 +59,7 @@ class FsFileTest extends LocalOperationsTestCase
         $pwd = $this->fs->pwd();
         $this->mkdirDst('testDir');
 
-        $this->fs->cd('file://' . $this->remoteDir . '/testDir');
+        $this->fs->cd('file://' . $this->dst->getRoot() . '/testDir');
         $newPwd = $this->fs->pwd();
 
         $this->assertEquals($pwd . 'testDir/', $newPwd);
