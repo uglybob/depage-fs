@@ -5,7 +5,7 @@ namespace Depage\Fs\Tests;
 use Depage\Fs\FsFtp;
 use Depage\Fs\Streams\FtpCurl;
 
-class FsFtpTest extends TestRemote
+class FsFtpTest extends RemoteOperationsTestCase
 {
     // {{{ createTestObject
     public function createTestObject($override = array())
@@ -25,6 +25,7 @@ class FsFtpTest extends TestRemote
         return new FsFtp($newParams);
     }
     // }}}
+
     // {{{ testDefaultPort
     public function testDefaultPort()
     {
@@ -62,7 +63,6 @@ class FsFtpTest extends TestRemote
         $this->assertSame('SSL certificate problem: unable to get local issuer certificate', $error);
     }
     // }}}
-
     // {{{ testTest
     /**
      * override, sending data to server actually happens at stream_flush

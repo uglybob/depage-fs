@@ -4,7 +4,7 @@ namespace Depage\Fs\Tests;
 
 use Depage\Fs\FsSsh;
 
-class FsSshTest extends TestRemote
+class FsSshTest extends RemoteOperationsTestCase
 {
     // {{{ createTestObject
     public function createTestObject($override = array())

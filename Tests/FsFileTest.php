@@ -2,7 +2,7 @@
 
 namespace Depage\Fs\Tests;
 
-class FsFileTest extends OperationsTestCase
+class FsFileTest extends LocalOperationsTestCase
 {
     // {{{ setUp
     public function setUp()
@@ -22,12 +22,6 @@ class FsFileTest extends OperationsTestCase
     }
     // }}}
 
-    // {{{ createSrc
-    protected function createSrc()
-    {
-        return new FsLocal($this->root . '/Temp');
-    }
-    // }}}
     // {{{ createDst
     protected function createDst()
     {

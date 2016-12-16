@@ -2,7 +2,7 @@
 
 namespace Depage\Fs\Tests;
 
-abstract class OperationsTestCase extends \PHPUnit_Framework_TestCase
+abstract class LocalOperationsTestCase extends \PHPUnit_Framework_TestCase
 {
     // {{{ constructor
     public function __construct()
@@ -30,6 +30,13 @@ abstract class OperationsTestCase extends \PHPUnit_Framework_TestCase
         $this->assertTrue($this->dst->tearDown());
 
         $this->assertTrue(chdir($this->root));
+    }
+    // }}}
+
+    // {{{ createSrc
+    protected function createSrc()
+    {
+        return new FsLocal($this->root . '/Temp');
     }
     // }}}
 
