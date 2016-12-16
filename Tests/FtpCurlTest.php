@@ -49,6 +49,32 @@ class FtpCurlTest extends \PHPUnit_Framework_TestCase
         $this->assertSame(['.', '..'], scandir($this->url));
     }
     // }}}
+    // {{{ testScandirFile
+    public function testScandirFile()
+    {
+        $this->assertTrue($this->dst->createFile('a'));
+
+        $this->assertSame(['.', '..', 'a'], scandir($this->url));
+    }
+    // }}}
+    // {{{ testScandirDir
+    public function testScandirDir()
+    {
+        $this->assertTrue($this->dst->mkdir('a'));
+
+        $this->assertSame(['.', '..', 'a'], scandir($this->url));
+    }
+    // }}}
+
+    // {{{ testStat
+    public function testStat()
+    {
+        $this->assertTrue($this->dst->createFile('a'));
+        $this->assertTrue($this->dst->touch('a', 0777, 499137660));
+
+        var_dump(stat($this->url . '/a'));
+    }
+    // }}}
 }
 
 /* vim:set ft=php sw=4 sts=4 fdm=marker et : */

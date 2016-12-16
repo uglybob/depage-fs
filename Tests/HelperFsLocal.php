@@ -97,10 +97,15 @@ class HelperFsLocal
     }
     // }}}
     // {{{ touch
-    public function touch($path, $mode = 0777)
+    public function touch($path, $mode = 0777, $time = null)
     {
         $path = $this->translatePath($path);
-        $result = \touch($path, $mode);
+
+        if ($time) {
+            $result = \touch($path, $mode, $time);
+        } else {
+            $result = \touch($path, $mode);
+        }
 
         return $result && chmod($path, $mode);
     }

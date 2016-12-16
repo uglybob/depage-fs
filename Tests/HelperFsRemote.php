@@ -59,12 +59,13 @@ class HelperFsRemote extends HelperFsLocal
     }
     // }}}
     // {{{ touch
-    public function touch($path, $mode = 0777)
+    public function touch($path, $mode = 0777, $time = null)
     {
         $absolutePath = $this->translatePath($path);
         $decMode = decoct($mode);
+        $mtime = ($time) ? ' -t ' . date('YmdHi.s', $time) : '';
 
-        $this->sshExec('touch ' . $absolutePath);
+        $this->sshExec('touch ' . $absolutePath . $mtime);
         $this->sshExec('chmod ' . $decMode . ' ' . $absolutePath);
 
         return $this->is_file($path);
