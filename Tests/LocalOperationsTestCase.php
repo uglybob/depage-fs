@@ -36,7 +36,7 @@ abstract class LocalOperationsTestCase extends \PHPUnit_Framework_TestCase
     // {{{ createSrc
     protected function createSrc()
     {
-        return new FsLocal($this->root . '/Temp');
+        return new HelperFsLocal($this->root . '/Temp');
     }
     // }}}
 

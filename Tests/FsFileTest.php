@@ -75,7 +75,6 @@ class FsFileTest extends LocalOperationsTestCase
         return parent::testMkdirFail();
     }
     // }}}
-
     // {{{ testCleanUrlFile
     public function testCleanUrlFile()
     {

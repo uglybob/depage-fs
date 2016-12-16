@@ -2,7 +2,7 @@
 
 namespace Depage\Fs\Tests;
 
-class FsRemote extends FsLocal
+class HelperFsRemote extends HelperFsLocal
 {
     // {{{ sshConnection
     protected function sshConnection()

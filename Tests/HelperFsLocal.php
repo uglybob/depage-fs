@@ -2,7 +2,7 @@
 
 namespace Depage\Fs\Tests;
 
-class FsLocal
+class HelperFsLocal
 {
     // {{{ constructor
     public function __construct($root)

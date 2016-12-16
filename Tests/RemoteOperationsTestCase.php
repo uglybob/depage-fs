@@ -7,7 +7,7 @@ abstract class RemoteOperationsTestCase extends LocalOperationsTestCase
     // {{{ createDst
     protected function createDst()
     {
-        return new FsRemote('/Temp');
+        return new HelperFsRemote('/Temp');
     }
     // }}}
 }
