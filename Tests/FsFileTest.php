@@ -2,7 +2,7 @@
 
 namespace Depage\Fs\Tests;
 
-class FsFileTest extends LocalOperationsTestCase
+class FsFileTest extends OperationsTestCase
 {
     // {{{ setUp
     public function setUp()

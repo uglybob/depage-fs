@@ -4,8 +4,14 @@ namespace Depage\Fs\Tests;
 
 use Depage\Fs\FsSsh;
 
-class FsSshTest extends RemoteOperationsTestCase
+class FsSshTest extends OperationsTestCase
 {
+    // {{{ createDst
+    protected function createDst()
+    {
+        return new HelperFsRemote('/Temp');
+    }
+    // }}}
     // {{{ createTestObject
     public function createTestObject($override = array())
     {

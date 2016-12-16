@@ -2,7 +2,7 @@
 
 namespace Depage\Fs\Tests;
 
-abstract class LocalOperationsTestCase extends \PHPUnit_Framework_TestCase
+abstract class OperationsTestCase extends \PHPUnit_Framework_TestCase
 {
     // {{{ constructor
     public function __construct()

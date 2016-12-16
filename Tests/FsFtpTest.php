@@ -5,8 +5,14 @@ namespace Depage\Fs\Tests;
 use Depage\Fs\FsFtp;
 use Depage\Fs\Streams\FtpCurl;
 
-class FsFtpTest extends RemoteOperationsTestCase
+class FsFtpTest extends OperationsTestCase
 {
+    // {{{ createDst
+    protected function createDst()
+    {
+        return new HelperFsRemote('/Temp');
+    }
+    // }}}
     // {{{ createTestObject
     public function createTestObject($override = array())
     {
