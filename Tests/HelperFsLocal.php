@@ -16,6 +16,12 @@ class HelperFsLocal
         return $this->root;
     }
     // }}}
+    // {{{ translatePath
+    protected function translatePath($path)
+    {
+        return $this->root . '/' . $path;
+    }
+    // }}}
 
     // {{{ setUp
     public function setUp()
@@ -39,13 +45,6 @@ class HelperFsLocal
     }
     // }}}
 
-    // {{{ translatePath
-    protected function translatePath($path)
-    {
-        return $this->root . '/' . $path;
-    }
-    // }}}
-
     // {{{ createFile
     public function createFile($path = 'testFile', $contents = 'testString')
     {
@@ -66,7 +65,6 @@ class HelperFsLocal
         return $file === [$contents];
     }
     // }}}
-
     // {{{ rm
     public function rm($path)
     {
@@ -86,12 +84,6 @@ class HelperFsLocal
         return $result && !$this->file_exists($path);
     }
     // }}}
-    // {{{ rmdir
-    public function rmdir($path)
-    {
-        return \rmdir($this->translatePath($path));
-    }
-    // }}}
     // {{{ mkdir
     public function mkdir($path)
     {
@@ -104,12 +96,6 @@ class HelperFsLocal
         return \file_exists($this->translatePath($path));
     }
     // }}}
-    // {{{ unlink
-    public function unlink($path)
-    {
-        return \unlink($this->translatePath($path));
-    }
-    // }}}
     // {{{ touch
     public function touch($path, $mode = 0777)
     {
@@ -119,7 +105,6 @@ class HelperFsLocal
         return $result && chmod($path, $mode);
     }
     // }}}
-
     // {{{ scandir
     public function scandir($path)
     {
@@ -138,11 +123,23 @@ class HelperFsLocal
         return \is_file($this->translatePath($path));
     }
     // }}}
-
     // {{{ sha1_file
     public function sha1_file($path)
     {
         return \sha1_file($this->translatePath($path));
+    }
+    // }}}
+
+    // {{{ rmdir
+    private function rmdir($path)
+    {
+        return \rmdir($this->translatePath($path));
+    }
+    // }}}
+    // {{{ unlink
+    private function unlink($path)
+    {
+        return \unlink($this->translatePath($path));
     }
     // }}}
 }

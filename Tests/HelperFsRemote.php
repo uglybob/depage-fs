@@ -4,28 +4,6 @@ namespace Depage\Fs\Tests;
 
 class HelperFsRemote extends HelperFsLocal
 {
-    // {{{ sshConnection
-    protected function sshConnection()
-    {
-        if (!isset($GLOBALS['SSH_CONNECTION'])) {
-            $GLOBALS['SSH_CONNECTION'] = ssh2_connect($GLOBALS['REMOTE_HOST'], 22);
-            ssh2_auth_password($GLOBALS['SSH_CONNECTION'], $GLOBALS['REMOTE_USER'], $GLOBALS['REMOTE_PASS']);
-        }
-
-        return $GLOBALS['SSH_CONNECTION'];
-    }
-    // }}}
-    // {{{ sshExec
-    protected function sshExec($cmd)
-    {
-        $stream = ssh2_exec($this->sshConnection(), $cmd);
-        stream_set_blocking($stream, true);
-        $streamResult = ssh2_fetch_stream($stream, SSH2_STREAM_STDIO);
-
-        return stream_get_contents($streamResult);
-    }
-    // }}}
-
     // {{{ translatePath
     protected function translatePath($path)
     {
@@ -51,21 +29,12 @@ class HelperFsRemote extends HelperFsLocal
         return $file === $contents;
     }
     // }}}
-
     // {{{ rm
     public function rm($path)
     {
         $this->sshExec('rm -r ' . $this->translatePath($path));
 
         return !$this->file_exists($path);
-    }
-    // }}}
-    // {{{ rmdir
-    public function rmdir($path)
-    {
-        $this->sshExec('rmdir ' . $this->translatePath($path));
-
-        return !$this->is_dir($path);
     }
     // }}}
     // {{{ mkdir
@@ -87,14 +56,6 @@ class HelperFsRemote extends HelperFsLocal
         return $this->is_dir($path) || $this->is_file($path);
     }
     // }}}
-    // {{{ unlink
-    public function unlink($path)
-    {
-        $this->sshExec('rm ' . $this->translatePath($path));
-
-        return !$this->file_exists($path);
-    }
-    // }}}
     // {{{ touch
     public function touch($path, $mode = 0777)
     {
@@ -107,7 +68,6 @@ class HelperFsRemote extends HelperFsLocal
         return $this->is_file($path);
     }
     // }}}
-
     // {{{ is_dir
     public function is_dir($path)
     {
@@ -124,13 +84,34 @@ class HelperFsRemote extends HelperFsLocal
         return (bool) trim($result);
     }
     // }}}
-
     // {{{ sha1_file
     public function sha1_file($path)
     {
         $result = explode(' ', $this->sshExec('sha1sum ' . $this->translatePath($path)));
 
         return $result[0];
+    }
+    // }}}
+
+    // {{{ sshConnection
+    protected function sshConnection()
+    {
+        if (!isset($GLOBALS['SSH_CONNECTION'])) {
+            $GLOBALS['SSH_CONNECTION'] = ssh2_connect($GLOBALS['REMOTE_HOST'], 22);
+            ssh2_auth_password($GLOBALS['SSH_CONNECTION'], $GLOBALS['REMOTE_USER'], $GLOBALS['REMOTE_PASS']);
+        }
+
+        return $GLOBALS['SSH_CONNECTION'];
+    }
+    // }}}
+    // {{{ sshExec
+    protected function sshExec($cmd)
+    {
+        $stream = ssh2_exec($this->sshConnection(), $cmd);
+        stream_set_blocking($stream, true);
+        $streamResult = ssh2_fetch_stream($stream, SSH2_STREAM_STDIO);
+
+        return stream_get_contents($streamResult);
     }
     // }}}
 }

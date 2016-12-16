@@ -25,7 +25,7 @@ class FsFileTest extends OperationsTestCase
     // }}}
 
     // {{{ createDst
-    protected function createDst()
+    public function createDst()
     {
         return $this->src;
     }

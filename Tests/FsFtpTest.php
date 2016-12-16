@@ -8,7 +8,7 @@ use Depage\Fs\Streams\FtpCurl;
 class FsFtpTest extends OperationsTestCase
 {
     // {{{ createDst
-    protected function createDst()
+    public function createDst()
     {
         return new HelperFsRemote('/Temp');
     }
