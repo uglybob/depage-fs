@@ -10,6 +10,13 @@ class FsLocal
         $this->root = $root;
     }
     // }}}
+    // {{{ getRoot
+    public function getRoot()
+    {
+        return $this->root;
+    }
+    // }}}
+
     // {{{ setUp
     public function setUp()
     {

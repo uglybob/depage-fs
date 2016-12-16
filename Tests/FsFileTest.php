@@ -8,7 +8,7 @@ class FsFileTest extends LocalOperationsTestCase
     public function setUp()
     {
         $this->assertTrue($this->src->setUp());
-        $this->assertTrue(chdir($this->src->getPath()));
+        $this->assertTrue(chdir($this->src->getRoot()));
 
         $this->fs = $this->createTestObject();
     }
@@ -33,7 +33,7 @@ class FsFileTest extends LocalOperationsTestCase
     {
         $params = [
             'scheme' => 'file',
-            'path' => '\Temp',
+            'path' => '/Temp',
         ];
 
         $newParams = array_merge($params, $override);
@@ -82,10 +82,11 @@ class FsFileTest extends LocalOperationsTestCase
     {
         $fs = $this->createTestObject();
         $fs->lateConnect();
+        $cwd = getcwd();
 
-        $this->assertEquals('file://' . getcwd() . '/path/to/file', $fs->cleanUrl('file://' . getcwd() . '/path/to/file'));
-        $this->assertEquals('file://' . getcwd() . '/path/to/file', $fs->cleanUrl('path/to/file'));
-        $this->assertEquals('file://' . getcwd() . '/path/to/file', $fs->cleanUrl(getcwd() . '/path/to/file'));
+        $this->assertEquals('file://' . $cwd . '/path/to/file', $fs->cleanUrl('file://' . $cwd . '/path/to/file'));
+        $this->assertEquals('file://' . $cwd . '/path/to/file', $fs->cleanUrl('path/to/file'));
+        $this->assertEquals('file://' . $cwd . '/path/to/file', $fs->cleanUrl($cwd . '/path/to/file'));
     }
     // }}}
 }
