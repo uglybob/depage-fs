@@ -33,7 +33,6 @@ class FsFileTest extends LocalOperationsTestCase
     {
         $params = [
             'scheme' => 'file',
-            'path' => '/Temp',
         ];
 
         $newParams = array_merge($params, $override);

@@ -95,7 +95,7 @@ class FsLocal
     // {{{ mkdir
     public function mkdir($path)
     {
-        return \mkdir($this->translatePath($path));
+        return \mkdir($this->translatePath($path), 0777, true);
     }
     // }}}
     // {{{ file_exists
