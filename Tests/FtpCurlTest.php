@@ -2,6 +2,8 @@
 
 namespace Depage\Fs\Tests;
 
+use Depage\Fs\Tests\TestClasses\FtpCurlTestClass;
+
 class FtpCurlTest extends \PHPUnit_Framework_TestCase
 {
     // {{{ setUp

@@ -1,6 +1,6 @@
 <?php
 
-namespace Depage\Fs\Tests;
+namespace Depage\Fs\Tests\TestClasses;
 
 use Depage\Fs\FsFile;
 
