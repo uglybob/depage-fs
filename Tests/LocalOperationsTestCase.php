@@ -84,18 +84,6 @@ abstract class LocalOperationsTestCase extends \PHPUnit_Framework_TestCase
         $this->assertTrue($this->dst->createFile($path, $contents));
     }
     // }}}
-    // {{{ checkFileSrc
-    protected function checkFileSrc($path, $contents)
-    {
-        $this->assertTrue($this->src->checkFile($path, $contents));
-    }
-    // }}}
-    // {{{ checkFileDst
-    protected function checkFileDst($path, $contents)
-    {
-        $this->assertTrue($this->dst->checkFile($path, $contents));
-    }
-    // }}}
 
     // {{{ testLs
     public function testLs()
@@ -404,7 +392,7 @@ abstract class LocalOperationsTestCase extends \PHPUnit_Framework_TestCase
 
         $this->fs->mv('testFile', 'testFile2');
         $this->assertFalse($this->dst->is_file('/testFile'));
-        $this->assertTrue($this->confirmRemoteTestFile('testFile2'));
+        $this->assertTrue($this->dst->checkFile('testFile2'));
     }
     // }}}
     // {{{ testMvOverwrite
@@ -414,7 +402,7 @@ abstract class LocalOperationsTestCase extends \PHPUnit_Framework_TestCase
         $this->createFileDst('testFile2', 'after');
 
         $this->fs->mv('testFile2', 'testFile');
-        $this->assertTrue($this->confirmRemoteTestFile('testFile', 'after'));
+        $this->assertTrue($this->dst->checkFile('testFile', 'after'));
     }
     // }}}
     // {{{ testMvIntoDirectory
@@ -424,7 +412,7 @@ abstract class LocalOperationsTestCase extends \PHPUnit_Framework_TestCase
         $this->mkdirDst('testDir');
 
         $this->fs->mv('testFile', 'testDir');
-        $this->assertTrue($this->confirmRemoteTestFile('testDir/testFile'));
+        $this->assertTrue($this->dst->checkFile('testDir/testFile'));
     }
     // }}}
     // {{{ testMvSourceDoesntExist
@@ -447,7 +435,7 @@ abstract class LocalOperationsTestCase extends \PHPUnit_Framework_TestCase
         $this->createFileDst('testFile');
 
         $this->fs->get('testFile');
-        $this->assertTrue($this->confirmLocalTestFile('testFile'));
+        $this->assertTrue($this->src->checkFile('testFile'));
     }
     // }}}
     // {{{ testGetNamed
@@ -456,28 +444,28 @@ abstract class LocalOperationsTestCase extends \PHPUnit_Framework_TestCase
         $this->createFileDst('testFile');
 
         $this->fs->get('testFile', 'testFile2');
-        $this->assertTrue($this->confirmLocalTestFile('testFile2'));
+        $this->assertTrue($this->src->checkFile('testFile2'));
     }
     // }}}
     // {{{ testGetOverwrite
     public function testGetOverwrite()
     {
         $this->createFileDst('testFile', 'after');
-        $this->createLocalTestFile('testFile2', 'before');
+        $this->createFileSrc('testFile2', 'before');
 
         $this->fs->get('testFile', 'testFile2');
-        $this->assertTrue($this->confirmLocalTestFile('testFile2', 'after'));
+        $this->assertTrue($this->src->checkFile('testFile2', 'after'));
     }
     // }}}
     // {{{ testPut
     public function testPut()
     {
-        $this->createLocalTestFile('testFile');
+        $this->createFileSrc('testFile');
 
         $this->assertFalse($this->dst->is_file('/testFile2'));
         $this->fs->put('testFile', 'testFile2');
-        $this->assertTrue($this->confirmLocalTestFile('testFile'));
-        $this->assertTrue($this->confirmRemoteTestFile('testFile2'));
+        $this->assertTrue($this->src->checkFile('testFile'));
+        $this->assertTrue($this->dst->checkFile('testFile2'));
     }
     // }}}
     // {{{ testPutBinary
@@ -494,10 +482,10 @@ abstract class LocalOperationsTestCase extends \PHPUnit_Framework_TestCase
     public function testPutOverwrite()
     {
         $this->createFileDst('testFile', 'before');
-        $this->createLocalTestFile('testFile2', 'after');
+        $this->createFileSrc('testFile2', 'after');
 
         $this->fs->put('testFile2', 'testFile');
-        $this->assertTrue($this->confirmRemoteTestFile('testFile', 'after'));
+        $this->assertTrue($this->dst->checkFile('testFile', 'after'));
     }
     // }}}
 
@@ -543,7 +531,7 @@ abstract class LocalOperationsTestCase extends \PHPUnit_Framework_TestCase
     {
         $this->fs->putString('testFile', 'testString');
 
-        $this->assertTrue($this->confirmRemoteTestFile('testFile'));
+        $this->assertTrue($this->dst->checkFile('testFile'));
     }
     // }}}
     // {{{ testPutStringOverwrite
@@ -552,7 +540,7 @@ abstract class LocalOperationsTestCase extends \PHPUnit_Framework_TestCase
         $this->createFileDst('testFile', 'before');
         $this->fs->putString('testFile', 'after');
 
-        $this->assertTrue($this->confirmRemoteTestFile('testFile', 'after'));
+        $this->assertTrue($this->dst->checkFile('testFile', 'after'));
     }
     // }}}
 
