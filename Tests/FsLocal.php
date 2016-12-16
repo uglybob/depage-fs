@@ -5,9 +5,9 @@ namespace Depage\Fs\Tests;
 class FsLocal
 {
     // {{{ constructor
-    public function __construct($path)
+    public function __construct($root)
     {
-        $this->path = $path;
+        $this->root = $root;
     }
     // }}}
     // {{{ setUp
@@ -15,12 +15,12 @@ class FsLocal
     {
         $result = true;
 
-        if ($this->is_dir($this->path)) {
-            $result = $this->rm($this->path);
+        if ($this->is_dir('')) {
+            $result = $this->rm('');
         }
 
-        $result = $result && $this->mkdir($this->path, 0777);
-        $result = $result && $this->is_dir($this->path);
+        $result = $result && $this->mkdir('', 0777);
+        $result = $result && $this->is_dir('');
 
         return $result;
     }
@@ -28,14 +28,14 @@ class FsLocal
     // {{{ tearDown
     public function tearDown()
     {
-        return $this->rm($this->path);
+        return $this->rm('/Temp');
     }
     // }}}
 
     // {{{ translatePath
     protected function translatePath($path)
     {
-        return $this->path . '/' . $path;
+        return $this->root . '/' . $path;
     }
     // }}}
 
@@ -113,6 +113,12 @@ class FsLocal
     }
     // }}}
 
+    // {{{ scandir
+    public function scandir($path)
+    {
+        return \scandir($this->translatePath($path));
+    }
+    // }}}
     // {{{ is_dir
     public function is_dir($path)
     {
