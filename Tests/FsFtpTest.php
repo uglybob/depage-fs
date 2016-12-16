@@ -7,6 +7,15 @@ use Depage\Fs\Streams\FtpCurl;
 
 class FsFtpTest extends OperationsTestCase
 {
+    // {{{ constructor
+    public function __construct()
+    {
+        parent::__construct();
+
+        $this->cert = $this->root . '/' . $GLOBALS['CA_CERT'];
+    }
+    // }}}
+
     // {{{ createDst
     public function createDst()
     {
@@ -23,7 +32,7 @@ class FsFtpTest extends OperationsTestCase
             'port' => 21,
             'user' => $GLOBALS['REMOTE_USER'],
             'pass' => $GLOBALS['REMOTE_PASS'],
-            'caCert' => $GLOBALS['CA_CERT'],
+            'caCert' => $this->cert,
         );
 
         $newParams = array_merge($params, $override);
@@ -43,7 +52,7 @@ class FsFtpTest extends OperationsTestCase
             'host' => $GLOBALS['REMOTE_HOST'],
             'user' => $GLOBALS['REMOTE_USER'],
             'pass' => $GLOBALS['REMOTE_PASS'],
-            'caCert' => $GLOBALS['CA_CERT'],
+            'caCert' => $this->cert,
         );
 
         $fs = new FsFtp($params);
