@@ -6,10 +6,10 @@ class HelperFsRemote extends HelperFsLocal
 {
     protected static $sshConnection;
 
-    // {{{ translatePath
-    protected function translatePath($path)
+    // {{{ constructor
+    public function __construct($path)
     {
-        return '/home/testuser/Temp/' . $path;
+        parent::__construct('/home/testuser' . $path);
     }
     // }}}
 
