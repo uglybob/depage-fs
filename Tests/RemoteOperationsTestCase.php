@@ -2,7 +2,7 @@
 
 namespace Depage\Fs\Tests;
 
-abstract class RemoteOperationsTestCase extends \PHPUnit_Framework_TestCase
+abstract class RemoteOperationsTestCase extends LocalOperationsTestCase
 {
     // {{{ createDst
     protected function createDst()

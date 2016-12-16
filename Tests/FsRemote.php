@@ -33,30 +33,6 @@ class FsRemote extends FsLocal
     }
     // }}}
 
-    // {{{ mkdirRemote
-    protected function mkdirRemote($path, $mode = 0777, $recursive = true)
-    {
-        $remotePath = '/home/testuser/Temp/' . $path;
-        $parents = ($recursive) ? '-p ' : '';
-        $decMode = decoct($mode);
-        $command = 'mkdir ' . $parents . '-m ' . $decMode . ' ' . $remotePath;
-        $this->sshExec($command);
-
-        $this->assertTrue($this->isDir($remotePath));
-    }
-    // }}}
-    // {{{ touchRemote
-    protected function touchRemote($path, $mode = 0777)
-    {
-        $remotePath = '/home/testuser/Temp/' . $path;
-        $this->sshExec('touch ' . $remotePath);
-        $decMode = decoct($mode);
-        $this->sshExec('chmod ' . $decMode . ' ' . $remotePath);
-
-        $this->assertTrue($this->isFile($remotePath));
-    }
-    // }}}
-
     // {{{ createFile
     public function createFile($path = 'testFile', $contents = 'testString')
     {
@@ -79,7 +55,7 @@ class FsRemote extends FsLocal
     // {{{ rm
     public function rm($path)
     {
-        $this->sshExec("rm -r $this->translatePath($path)");
+        $this->sshExec('rm -r ' . $this->translatePath($path));
 
         return !$this->file_exists($path);
     }
@@ -87,15 +63,20 @@ class FsRemote extends FsLocal
     // {{{ rmdir
     public function rmdir($path)
     {
-        $this->sshExec("rmdir $this->translatePath($path)");
+        $this->sshExec('rmdir ' . $this->translatePath($path));
 
         return !$this->is_dir($path);
     }
     // }}}
     // {{{ mkdir
-    public function mkdir($path)
+    public function mkdir($path, $mode = 0777, $recursive = true)
     {
-        $this->sshExec('mkdir -m 777 ' . $this->translatePath($path));
+        $absolutePath = $this->translatePath($path);
+
+        $parents = ($recursive) ? '-p ' : '';
+        $decMode = decoct($mode);
+        $command = 'mkdir ' . $parents . '-m ' . $decMode . ' ' . $absolutePath;
+        $this->sshExec($command);
 
         return $this->is_dir($path);
     }
@@ -109,8 +90,7 @@ class FsRemote extends FsLocal
     // {{{ unlink
     public function unlink($path)
     {
-        $absolutePath = $this->translatePath($path);
-        $this->sshExec("rm $absolutePath");
+        $this->sshExec('rm ' . $this->translatePath($path));
 
         return !$this->file_exists($path);
     }
@@ -148,7 +128,7 @@ class FsRemote extends FsLocal
     // {{{ sha1_file
     public function sha1_file($path)
     {
-        $result = explode(' ', $this->sshExec("sha1sum $this->translatePath($path)"));
+        $result = explode(' ', $this->sshExec('sha1sum ' . $this->translatePath($path)));
 
         return $result[0];
     }

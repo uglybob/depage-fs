@@ -71,7 +71,7 @@ class FsFtpTest extends RemoteOperationsTestCase
     public function testTest()
     {
         $this->assertTrue($this->fs->test());
-        $this->deleteRemoteTestDir();
+        $this->assertTrue($this->dst->tearDown());
         $this->assertFalse($this->fs->test($error));
     }
     // }}}

@@ -18,7 +18,7 @@ abstract class LocalOperationsTestCase extends \PHPUnit_Framework_TestCase
     {
         $this->assertTrue($this->src->setUp());
         $this->assertTrue($this->dst->setUp());
-        $this->assertTrue(chdir($this->src->getPath()));
+        $this->assertTrue(chdir($this->src->getRoot()));
 
         $this->fs = $this->createTestObject();
     }
