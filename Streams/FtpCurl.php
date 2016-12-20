@@ -280,16 +280,22 @@ class FtpCurl
             $stat = $this->createStat();
 
             if (count($nodes) === 1) {
+                $node = array_pop($nodes);
                 $info = curl_getinfo(static::$handle);
 
                 $this->setStat($stat, 'mtime', (int) $info['filetime']);
                 $this->setStat($stat, 'atime', -1);
                 $this->setStat($stat, 'ctime', -1);
-                $this->setStat($stat, 'size', (int) $info['download_content_length']);
-                $this->setStat($stat, 'mode', octdec(100644));
+                $this->setStat($stat, 'size', $node['size']);
             } else {
-                $this->setStat($stat, 'mode', octdec(40644));
+                $node = array_pop($nodes['.']);
             }
+
+            $this->setStat(
+                $stat,
+                'mode',
+                octdec($this->translateFileType($node['type']) . $this->translatePermissions($node['permissions']))
+            );
         }
 
         return $stat;
@@ -389,7 +395,7 @@ class FtpCurl
                 $split = preg_split('/\s+/', $line);
 
                 $info['type'] = $split[0][0];
-                $info['permisions'] = substr(array_shift($split),1);
+                $info['permissions'] = substr(array_shift($split),1);
                 $info['hardlinks'] = array_shift($split);
                 $info['user'] = array_shift($split);
                 $info['group'] = array_shift($split);
@@ -402,6 +408,40 @@ class FtpCurl
         }
 
         return $nodes;
+    }
+    // }}}
+
+    // {{{ translateFileType
+    protected function translateFileType($char)
+    {
+        $type = false;
+
+        switch ($char) {
+            case '-': $type = 100; break;
+            case 'd': $type = 40; break;
+        }
+
+        return $type;
+    }
+    // }}}
+    // {{{ translatePermissions
+    protected function translatePermissions($permissions)
+    {
+        $result = '';
+
+        foreach (str_split($permissions, 3) as $operator) {
+            $numerical = 0;
+
+            for ($i = 0; $i < 2; $i++) {
+                if ($operator[$i] !== '-') {
+                    $numerical += pow(2, (2 - $i));
+                }
+            }
+
+            $result .= $numerical;
+        }
+
+        return $result;
     }
     // }}}
 }

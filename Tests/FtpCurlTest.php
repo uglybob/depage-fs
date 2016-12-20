@@ -72,7 +72,7 @@ class FtpCurlTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue($this->dst->createFile('a'));
         $this->assertTrue($this->dst->touch('a', 0777, 499137660));
 
-        var_dump(stat($this->url . '/a'));
+        stat($this->url . '/a');
     }
     // }}}
 }
