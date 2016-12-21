@@ -1,11 +1,11 @@
 .PHONY: build run kill enter
 
 build:
-	docker build --rm -t depage-fs-test .
+	docker build -t depage-fs-test .
 
 run: kill
 	docker run -d --name mock-server --net host -v $(CURDIR)/home:/home/testuser depage-fs-test
-	-docker cp mock-server:/etc/proftpd/ssl/ca.pem $(CURDIR)/ssl
+	-docker cp mock-server:/etc/ssl/private/ca.pem $(CURDIR)/ssl
 
 kill:
 	-docker kill mock-server
