@@ -267,11 +267,14 @@ class FtpCurl
     // {{{ url_stat
     public function url_stat($url, $flags)
     {
-        $stat = false;
+        $array = explode('/', $url);
+        $nodeName = array_pop($array);
+        $url = implode('/', $array) . '/';
 
-        $path = $this->createHandle($url, true);
+        $stat = false;
+        $this->createHandle($url, false);
         $this->curlSet(CURLOPT_FILETIME, true);
-        $this->curlSet(CURLOPT_CUSTOMREQUEST, 'LIST -a ' . $path);
+        $this->curlSet(CURLOPT_CUSTOMREQUEST, 'LIST -a ' . $nodeName);
         $result = $this->execute();
 
         if ($result) {
@@ -288,7 +291,7 @@ class FtpCurl
                 $this->setStat($stat, 'ctime', -1);
                 $this->setStat($stat, 'size', $node['size']);
             } else {
-                $node = array_pop($nodes['.']);
+                $node = $nodes['.'];
             }
 
             $this->setStat(
