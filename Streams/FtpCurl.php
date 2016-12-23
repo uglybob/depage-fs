@@ -267,21 +267,20 @@ class FtpCurl
     // {{{ url_stat
     public function url_stat($url, $flags)
     {
-        $array = explode('/', $url);
-        $nodeName = array_pop($array);
-        $url = implode('/', $array) . '/';
+        $urlArray = explode('/', $url);
+        $nodeName = array_pop($urlArray);
+        $url = implode('/', $urlArray) . '/';
 
         $stat = false;
         $this->createHandle($url, false);
         $this->curlSet(CURLOPT_FILETIME, true);
-        $this->curlSet(CURLOPT_CUSTOMREQUEST, 'LIST -a ' . $nodeName);
+        $this->curlSet(CURLOPT_CUSTOMREQUEST, 'LIST -a');
         $result = $this->execute();
 
         if ($result) {
             $nodes = $this->parseLs($result);
 
-            $stat = $this->createStat();
-
+            /*
             if (count($nodes) === 1) {
                 $node = array_pop($nodes);
                 $info = curl_getinfo(static::$handle);
@@ -291,14 +290,18 @@ class FtpCurl
                 $this->setStat($stat, 'ctime', -1);
                 $this->setStat($stat, 'size', $node['size']);
             } else {
-                $node = $nodes['.'];
-            }
+                */
 
-            $this->setStat(
-                $stat,
-                'mode',
-                octdec($this->translateFileType($node['type']) . $this->translatePermissions($node['permissions']))
-            );
+            if (isset($nodes[$nodeName])) {
+                $stat = $this->createStat();
+                $node = $nodes[$nodeName];
+
+                $this->setStat(
+                    $stat,
+                    'mode',
+                    octdec($this->translateFileType($node['type']) . $this->translatePermissions($node['permissions']))
+                );
+            }
         }
 
         return $stat;

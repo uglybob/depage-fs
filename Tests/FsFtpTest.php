@@ -16,6 +16,14 @@ class FsFtpTest extends OperationsTestCase
     }
     // }}}
 
+    // {{{ setUp
+    public function setUp()
+    {
+        FtpCurl::disconnect();
+        parent::setUp();
+    }
+    // }}}
+
     // {{{ createDst
     public function createDst()
     {
