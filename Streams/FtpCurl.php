@@ -173,9 +173,9 @@ class FtpCurl
     {
         $this->url = $url;
         $this->mode = $mode;
+        $this->pos = 0;
 
         $this->createHandle($url);
-        $this->pos = 0;
 
         if ($this->mode == 'wb') {
             $this->curlSet(CURLOPT_UPLOAD, true);
@@ -273,24 +273,11 @@ class FtpCurl
 
         $stat = false;
         $this->createHandle($url, false);
-        $this->curlSet(CURLOPT_FILETIME, true);
         $this->curlSet(CURLOPT_CUSTOMREQUEST, 'LIST -a');
         $result = $this->execute();
 
         if ($result) {
             $nodes = $this->parseLs($result);
-
-            /*
-            if (count($nodes) === 1) {
-                $node = array_pop($nodes);
-                $info = curl_getinfo(static::$handle);
-
-                $this->setStat($stat, 'mtime', (int) $info['filetime']);
-                $this->setStat($stat, 'atime', -1);
-                $this->setStat($stat, 'ctime', -1);
-                $this->setStat($stat, 'size', $node['size']);
-            } else {
-                */
 
             if (isset($nodes[$nodeName])) {
                 $stat = $this->createStat();

@@ -52,8 +52,6 @@ class FsFtpTest extends OperationsTestCase
     // {{{ testDefaultPort
     public function testDefaultPort()
     {
-        FtpCurl::disconnect();
-
         $params = array(
             'path' => '/Temp',
             'scheme' => 'ftp',
@@ -70,8 +68,6 @@ class FsFtpTest extends OperationsTestCase
     // {{{ testSslFail
     public function testSslFail()
     {
-        FtpCurl::disconnect();
-
         $params = array(
             'path' => '/Temp',
             'scheme' => 'ftp',
