@@ -1,4 +1,4 @@
-.PHONY: build run kill enter
+.PHONY: build run kill enter clean
 
 build:
 	docker build -t depage-fs-test .
@@ -13,3 +13,7 @@ kill:
 
 enter:
 	docker exec -it mock-server sh -c "export TERM=xterm && bash"
+
+clean:
+	docker rm -f mock-server
+	docker rmi -f depage-fs-test:latest
