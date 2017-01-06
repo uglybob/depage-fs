@@ -35,6 +35,8 @@ class FtpCurlTest extends \PHPUnit_Framework_TestCase
     // {{{ tearDown
     public function tearDown()
     {
+        FtpCurlTestClass::disconnect();
+
         $this->assertTrue($this->src->tearDown());
         $this->assertTrue($this->dst->tearDown());
 
@@ -63,6 +65,42 @@ class FtpCurlTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue($this->dst->mkdir('a'));
 
         $this->assertSame(['.', '..', 'a'], scandir($this->url));
+    }
+    // }}}
+    // {{{ testScandirFileDir
+    public function testScandirDirFile()
+    {
+        $this->assertTrue($this->dst->createFile('a'));
+        $this->assertTrue($this->dst->mkdir('b'));
+
+        $this->assertSame(['.', '..', 'a', 'b'], scandir($this->url));
+    }
+    // }}}
+    // {{{ testScandirFileSortDescending
+    public function testScandirFileSortDescending()
+    {
+        $this->assertTrue($this->dst->createFile('a'));
+        $this->assertTrue($this->dst->createFile('b'));
+        $this->assertTrue($this->dst->createFile('c'));
+
+        $this->assertSame(['c', 'b', 'a', '..', '.'], scandir($this->url, SCANDIR_SORT_DESCENDING));
+    }
+    // }}}
+
+    // {{{ testFileGetContents
+    public function testFileGetContents()
+    {
+        $this->assertTrue($this->dst->createFile('a'));
+
+        $this->assertSame('testString', file_get_contents($this->url . 'a'));
+    }
+    // }}}
+    // {{{ testFile
+    public function testFile()
+    {
+        $this->assertTrue($this->dst->createFile('a'));
+
+        $this->assertSame(['testString'], file($this->url . 'a'));
     }
     // }}}
 
