@@ -332,6 +332,17 @@ class Fs
     {
         $parsed = parse_url($url);
 
+        // hack, parse_url (PHP 5.6.29) won't handle resource name strings
+        if (isset($parsed['fragment'])) {
+            $urlParts = explode('/', $url);
+
+            if (isset($urlParts[2]) && preg_match('/^Resource id \#([0-9]+)$/', $urlParts[2], $matches)) {
+                $urlParts[2] = $matches[1];
+                $parsed = parse_url(implode('/', $urlParts));
+                $parsed['host'] = 'Resource id #' . $parsed['host'];
+            }
+        }
+
         // hack, parse_url matches anything after the first question mark as "query"
         $path = (isset($parsed['path'])) ? $parsed['path'] : null;
         $query = (isset($parsed['query'])) ? $parsed['query'] : null;

@@ -172,12 +172,20 @@ class FsSsh extends Fs
     // {{{ rename
     protected function rename($source, $target)
     {
+        $result = true;
+
         // workaround, rename doesn't overwrite files via ssh
-        if (file_exists($target) && is_file($target)) {
+        if (is_file($target) && is_file($source)) {
             $this->rm($target);
+            $result = !is_file($target);
         }
 
-        return parent::rename($source, $target);
+        if ($result) {
+            parent::rename($source, $target);
+            $result = is_file($target);
+        }
+
+        return $result;
     }
     // }}}
 }
