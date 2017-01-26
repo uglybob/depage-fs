@@ -79,7 +79,7 @@ class FsFtpTest extends OperationsTestCase
         $fs = new FsFtp($params);
 
         $this->assertFalse($fs->test($error));
-        $this->assertSame('SSL certificate problem: unable to get local issuer certificate', $error);
+        $this->assertContains('certificate', $error);
     }
     // }}}
     // {{{ testTest
