@@ -9,9 +9,7 @@ RUN mkdir -p /var/log/supervisor
 RUN mkdir -p /var/run/sshd
 
 COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
-COPY start.sh /usr/local/bin/start.sh
 COPY vsftpd.conf /etc/vsftpd.conf
-RUN chmod 755 /usr/local/bin/start.sh
 
 # generate ca key & cert
 RUN openssl genrsa -out /etc/ssl/private/ca.key 2048
