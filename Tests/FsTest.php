@@ -212,7 +212,7 @@ class FsTest extends \PHPUnit_Framework_TestCase
         );
 
         $fs = $this->createTestObject($params);
-        $this->assertEquals('testScheme://testUser:@testHost/', $fs->pwd());
+        $this->assertEquals('testScheme://testUser@testHost/', $fs->pwd());
     }
     // }}}
 
