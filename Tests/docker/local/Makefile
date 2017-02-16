@@ -1,10 +1,13 @@
-.PHONY: build run kill enter clean
+.PHONY: build run kill enter clean test
 
 build:
 	docker build -t depage-fs-test .
 
-run: kill
-	docker run --name test-instance -v $(CURDIR)/../../../:/depage-fs --link server-vsftpd:vsftpd -i -t depage-fs-test
+test: run
+	docker exec test-instance depage-fs/vendor/bin/phpunit --configuration PHPUnit.xml .
+
+run: build kill
+	docker run -d --name test-instance -v $(CURDIR)/../../../:/depage-fs --link server-vsftpd:vsftpd depage-fs-test
 
 kill:
 	-docker kill test-instance

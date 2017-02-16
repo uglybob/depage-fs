@@ -3,7 +3,7 @@
 build:
 	docker build -t depage-fs-server-vsftpd .
 
-run: kill
+run: build kill
 	docker run -d --name server-vsftpd -v $(CURDIR)/home:/home/testuser depage-fs-server-vsftpd
 	-docker cp server-vsftpd:/etc/ssl/private/ca.pem $(CURDIR)/ssl
 

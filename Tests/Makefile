@@ -1,19 +1,17 @@
 RM = rm -rf
 
-PHONY: test remote-vsftpd clean
+.PHONY: test remote-vsftpd local clean
 
-test: remote-vsftpd local
-	../vendor/bin/phpunit --configuration PHPUnit.xml .
-
-remote-vsftpd:
-	$(MAKE) -C docker/remote-vsftpd
-	$(MAKE) run -C docker/remote-vsftpd
+test: local
+	$(MAKE) test -C docker/local
 
 local: remote-vsftpd
-	$(MAKE) -C docker/local
 	$(MAKE) run -C docker/local
 
+remote-vsftpd:
+	$(MAKE) run -C docker/remote-vsftpd
+
 clean:
-	${RM} Report Temp docker/ssl/ca.pem
+	${RM} Report Temp docker/remote-vsftpd/ssl/ca.pem
 	$(MAKE) clean -C docker/local
 	$(MAKE) clean -C docker/remote-vsftpd
