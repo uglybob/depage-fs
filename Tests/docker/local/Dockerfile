@@ -8,3 +8,4 @@ RUN printf "\n" | pecl install channel://pecl.php.net/ssh2-0.13
 
 RUN echo "extension=ssh2.so" >> /etc/php5/cli/php.ini
 
+ENTRYPOINT ["/depage-fs/vendor/bin/phpunit"]
