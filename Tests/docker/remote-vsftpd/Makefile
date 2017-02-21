@@ -1,19 +1,22 @@
+CONTAINER = depage-fs-vsftpd
+INSTANCE = depage-fs-vsftpd0
+
 .PHONY: build run kill enter clean
 
 build:
-	docker build -t depage-fs-server-vsftpd .
+	docker build -t $(CONTAINER) .
 
 run: build kill
-	docker run -d --name server-vsftpd -v $(CURDIR)/home:/home/testuser depage-fs-server-vsftpd
-	-docker cp server-vsftpd:/etc/ssl/private/ca.pem $(CURDIR)/ssl
+	docker run -d --name $(INSTANCE) -v $(CURDIR)/home:/home/testuser $(CONTAINER)
+	-docker cp $(INSTANCE):/etc/ssl/private/ca.pem $(CURDIR)/ssl
 
 kill:
-	-docker kill server-vsftpd
-	-docker rm server-vsftpd
+	-docker kill $(INSTANCE)
+	-docker rm $(INSTANCE)
 
 enter:
-	docker exec -it server-vsftpd sh -c "export TERM=xterm && bash"
+	docker exec -it $(INSTANCE) sh -c "export TERM=xterm && bash"
 
 clean:
-	docker rm -f server-vsftpd
-	docker rmi -f depage-fs-server-vsftpd:latest
+	docker rm -f $(INSTANCE)
+	docker rmi -f $(CONTAINER):latest
