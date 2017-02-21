@@ -20,5 +20,5 @@ enter:
 	docker exec -it $(INSTANCE) sh -c "export TERM=xterm && bash"
 
 clean:
-	docker rm -f $(INSTANCE)
-	docker rmi -f $(CONTAINER):latest
+	-docker rm -f $(INSTANCE)
+	-docker rmi -f $(CONTAINER):latest

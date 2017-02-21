@@ -23,7 +23,7 @@ RUN openssl x509 -req -days 365 -CA /etc/proftpd/ssl/ca.pem -CAkey /etc/proftpd/
 
 RUN chmod 600 /etc/proftpd/ssl/*
 
-ADD ssl/tls.conf /etc/proftpd/tls.conf
+ADD tls.conf /etc/proftpd/tls.conf
 
 RUN useradd -m -p co.yjyxRTlonU testuser
 
