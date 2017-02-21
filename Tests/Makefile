@@ -2,8 +2,11 @@ RM = rm -rf
 
 .PHONY: remote-vsftpd test clean
 
-test: remote-vsftpd
+test:
 	$(MAKE) run -C docker/local
+
+build: remote-vsftpd
+	$(MAKE) build -C docker/local
 
 remote-vsftpd:
 	$(MAKE) run -C docker/remote-vsftpd
