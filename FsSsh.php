@@ -155,7 +155,8 @@ class FsSsh extends Fs
     protected function buildUrl($parsed, $showPass = true)
     {
         $url = $parsed['scheme'] . '://';
-        $url .= $this->getSession();
+        // intval workaround for https://bugs.php.net/bug.php?id=73597
+        $url .= intval($this->getSession());
 
         $path = isset($parsed['path']) ? $parsed['path'] : '/';
         // workaround for https://bugs.php.net/bug.php?id=64169

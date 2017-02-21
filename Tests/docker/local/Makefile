@@ -1,4 +1,4 @@
-.PHONY: build run kill enter clean test
+.PHONY: build run kill enter clean
 
 build:
 	docker build -t depage-fs-test .

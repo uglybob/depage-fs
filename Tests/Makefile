@@ -1,8 +1,8 @@
 RM = rm -rf
 
-.PHONY: remote-vsftpd local clean
+.PHONY: remote-vsftpd test clean
 
-local: remote-vsftpd
+test: remote-vsftpd
 	$(MAKE) run -C docker/local
 
 remote-vsftpd:
