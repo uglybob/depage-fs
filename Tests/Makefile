@@ -1,17 +1,19 @@
 RM = rm -rf
 
-.PHONY: remote-vsftpd test clean
+.PHONY: test test-vsftpd test-proftpd clean
 
-test:
-	$(MAKE) run -C docker/local
+test: test-vsftpd test-proftpd
 
-build: remote-vsftpd
-	$(MAKE) build -C docker/local
-
-remote-vsftpd:
+test-vsftpd:
 	$(MAKE) run -C docker/remote-vsftpd
+	$(MAKE) run-vsftpd -C docker/local
+
+test-proftpd:
+	$(MAKE) run -C docker/remote-proftpd
+	$(MAKE) run-proftpd -C docker/local
 
 clean:
-	${RM} Report Temp docker/remote-vsftpd/ssl/ca.pem
+	${RM} Report Temp docker/ssl/ca.pem
 	$(MAKE) clean -C docker/local
 	$(MAKE) clean -C docker/remote-vsftpd
+	$(MAKE) clean -C docker/remote-proftpd

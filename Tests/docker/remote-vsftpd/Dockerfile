@@ -17,7 +17,7 @@ RUN openssl req -x509 -new -key /etc/ssl/private/ca.key -days 3650 -out /etc/ssl
 
 # generate client key & cert
 RUN openssl genrsa -out /etc/ssl/private/ftp.key 2048
-RUN openssl req -new -key /etc/ssl/private/ftp.key -out /etc/ssl/private/ftp.csr -subj "/C=DE/ST=Berlin/L=Berlin/O=depage.net/OU=IT/CN=vsftpd"
+RUN openssl req -new -key /etc/ssl/private/ftp.key -out /etc/ssl/private/ftp.csr -subj "/C=DE/ST=Berlin/L=Berlin/O=depage.net/OU=IT/CN=depage-server"
 
 # generate signed client cert
 RUN openssl x509 -req -days 365 -CA /etc/ssl/private/ca.pem -CAkey /etc/ssl/private/ca.key -CAcreateserial -CAserial serial -in /etc/ssl/private/ftp.csr -out /etc/ssl/private/ftp.pem

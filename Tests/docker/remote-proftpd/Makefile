@@ -1,5 +1,5 @@
-CONTAINER = depage-fs-vsftpd
-INSTANCE = depage-fs-vsftpd0
+CONTAINER = depage-fs-proftpd
+INSTANCE = depage-fs-proftpd0
 
 .PHONY: build run kill enter clean
 
@@ -8,7 +8,7 @@ build:
 
 run: build kill
 	docker run -d --name $(INSTANCE) -v $(CURDIR)/home:/home/testuser $(CONTAINER)
-	docker cp $(INSTANCE):/etc/ssl/private/ca.pem $(CURDIR)/../ssl
+	docker cp $(INSTANCE):/etc/proftpd/ssl/ca.pem $(CURDIR)/../ssl
 
 kill:
 	-docker kill $(INSTANCE)
