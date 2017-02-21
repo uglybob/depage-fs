@@ -8,6 +8,7 @@ build:
 
 run: build kill
 	docker run -d --name $(INSTANCE) -v $(CURDIR)/home:/home/testuser $(CONTAINER)
+	mkdir -p $(CURDIR)/../ssl
 	docker cp $(INSTANCE):/etc/ssl/private/ca.pem $(CURDIR)/../ssl
 
 kill:

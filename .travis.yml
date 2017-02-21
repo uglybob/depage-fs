@@ -7,10 +7,7 @@ branches:
     only:
         - master
 
-before_install:
-    - cd Tests
-    - make build
-
 script:
-    - make test
+    - cd Tests
+    - make
 
